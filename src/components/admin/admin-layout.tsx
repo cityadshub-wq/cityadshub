@@ -1,20 +1,31 @@
 import { useState } from 'react'
 import { Link, useLocation, Outlet } from 'react-router-dom'
-import { LayoutDashboard, Users, Building2, Briefcase, FileText, Star, MessageSquare, Gift, BarChart3, LogOut, Menu, X, Settings } from 'lucide-react'
+import { LayoutDashboard, Users, Building2, Briefcase, FileText, Star, MessageSquare, Gift, BarChart3, LogOut, Menu, X, Settings, UserCog, FolderOpen, DollarSign, CreditCard, Globe } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAuth } from '@/contexts/AuthContext'
 import { Button } from '@/components/ui'
 
 const sidebarLinks = [
   { path: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { path: '/admin/leads', label: 'Leads', icon: Users },
-  { path: '/admin/business-registration', label: 'Registration', icon: Building2 },
-  { path: '/admin/portfolio', label: 'Portfolio', icon: Briefcase },
+  { path: '/admin/clients', label: 'Clients', icon: UserCog },
+  { path: '/admin/employees', label: 'Employees', icon: Users },
+  { path: '/admin/leads', label: 'Leads', icon: BarChart3 },
+  { separator: 'Content' },
+  { path: '/admin/services', label: 'Services', icon: Briefcase },
+  { path: '/admin/projects', label: 'Projects', icon: FolderOpen },
+  { path: '/admin/portfolio', label: 'Portfolio', icon: Building2 },
   { path: '/admin/blogs', label: 'Blog Posts', icon: FileText },
   { path: '/admin/testimonials', label: 'Testimonials', icon: Star },
+  { separator: 'Finance' },
+  { path: '/admin/invoices', label: 'Invoices', icon: DollarSign },
+  { path: '/admin/payments', label: 'Payments', icon: CreditCard },
+  { separator: 'CRM' },
+  { path: '/admin/business-registration', label: 'Registration', icon: Globe },
   { path: '/admin/messages', label: 'Messages', icon: MessageSquare },
   { path: '/admin/referrals', label: 'Referrals', icon: Gift },
+  { separator: 'Insights' },
   { path: '/admin/analytics', label: 'Analytics', icon: BarChart3 },
+  { separator: 'System' },
   { path: '/admin/settings', label: 'Settings', icon: Settings },
 ]
 
@@ -47,8 +58,15 @@ export function AdminLayout() {
           </button>
         </div>
 
-        <nav className="px-3 py-4 space-y-1">
+        <nav className="px-3 py-4 space-y-1 overflow-y-auto max-h-[calc(100vh-8rem)]">
           {sidebarLinks.map((link) => {
+            if ('separator' in link) {
+              return (
+                <div key={link.separator} className="px-3 pt-4 pb-1.5">
+                  <span className="text-[10px] font-semibold uppercase tracking-widest text-gray-500">{link.separator}</span>
+                </div>
+              )
+            }
             const isActive = location.pathname === link.path
             return (
               <Link

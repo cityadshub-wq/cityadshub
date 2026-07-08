@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import { Navbar } from '@/components/layout/navbar'
 import { Footer } from '@/components/layout/footer'
 import { ProtectedRoute } from '@/hooks/use-protected-route'
@@ -33,6 +33,13 @@ import { AdminTestimonialsPage } from '@/pages/admin/testimonials'
 import { AdminMessagesPage } from '@/pages/admin/messages'
 import { AdminReferralsPage } from '@/pages/admin/referrals'
 import { AdminAnalyticsPage } from '@/pages/admin/analytics'
+import { AdminClientsPage } from '@/pages/admin/clients'
+import { AdminEmployeesPage } from '@/pages/admin/employees'
+import { AdminServicesPage } from '@/pages/admin/services'
+import { AdminProjectsPage } from '@/pages/admin/projects'
+import { AdminInvoicesPage } from '@/pages/admin/invoices'
+import { AdminPaymentsPage } from '@/pages/admin/payments'
+import { AdminSettingsPage } from '@/pages/admin/settings'
 
 function PublicLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -71,6 +78,7 @@ export default function App() {
 
       <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
         <Route element={<AdminLayout />}>
+          <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/leads" element={<AdminLeadsPage />} />
           <Route path="/admin/business-registration" element={<AdminBusinessRegistrationPage />} />
@@ -80,6 +88,13 @@ export default function App() {
           <Route path="/admin/messages" element={<AdminMessagesPage />} />
           <Route path="/admin/referrals" element={<AdminReferralsPage />} />
           <Route path="/admin/analytics" element={<AdminAnalyticsPage />} />
+          <Route path="/admin/clients" element={<AdminClientsPage />} />
+          <Route path="/admin/employees" element={<AdminEmployeesPage />} />
+          <Route path="/admin/services" element={<AdminServicesPage />} />
+          <Route path="/admin/projects" element={<AdminProjectsPage />} />
+          <Route path="/admin/invoices" element={<AdminInvoicesPage />} />
+          <Route path="/admin/payments" element={<AdminPaymentsPage />} />
+          <Route path="/admin/settings" element={<AdminSettingsPage />} />
         </Route>
       </Route>
     </Routes>

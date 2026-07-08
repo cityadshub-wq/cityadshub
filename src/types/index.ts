@@ -134,6 +134,63 @@ export interface Notification {
   created_at: string
 }
 
+export interface Invoice {
+  id: string
+  client_id: string
+  project_id?: string
+  invoice_number: string
+  amount: number
+  status: 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled'
+  due_date: string
+  issued_date: string
+  paid_at?: string
+  items: InvoiceItem[]
+  notes?: string
+  created_at: string
+}
+
+export interface InvoiceItem {
+  description: string
+  quantity: number
+  rate: number
+  amount: number
+}
+
+export interface Payment {
+  id: string
+  invoice_id: string
+  client_id: string
+  amount: number
+  method: 'bank_transfer' | 'upi' | 'card' | 'cash' | 'other'
+  status: 'pending' | 'completed' | 'failed' | 'refunded'
+  transaction_id?: string
+  paid_at: string
+  notes?: string
+  created_at: string
+}
+
+export interface WebsiteSettings {
+  id: string
+  site_name: string
+  tagline: string
+  logo_url?: string
+  favicon_url?: string
+  primary_color: string
+  secondary_color: string
+  facebook_url?: string
+  instagram_url?: string
+  youtube_url?: string
+  linkedin_url?: string
+  whatsapp_number?: string
+  contact_email: string
+  contact_phone: string
+  address: string
+  business_hours: string
+  meta_description?: string
+  meta_keywords?: string
+  updated_at: string
+}
+
 export interface FAQ {
   id: string
   question: string
