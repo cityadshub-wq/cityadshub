@@ -1,8 +1,26 @@
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowRight, BarChart3, Globe, Megaphone, Search, Smartphone, Camera, Video, Building2, ChevronRight } from 'lucide-react'
+import { ArrowRight, BarChart3, Globe, Megaphone, Search, Smartphone, Camera, Video, Building2, ChevronRight, Loader2 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { Button, Card } from '@/components/ui'
 import { SEO } from '@/components/shared/seo'
+import { getHeroCards } from '@/services/hero-cards'
+import type { HeroCard } from '@/types'
+import { AboutSection } from '@/components/sections/about-section'
+import { PortfolioSection } from '@/components/sections/portfolio-section'
+import { PricingSection } from '@/components/sections/pricing-section'
+import { TestimonialsSection } from '@/components/sections/testimonials-section'
+
+const iconMap: Record<string, any> = {
+  Megaphone, Search, Globe, Smartphone, Camera, BarChart3,
+  Building2, Target: Megaphone, TrendingUp: BarChart3, Zap: Megaphone,
+  Users: Megaphone, Palette: Globe, ShoppingBag: Building2,
+}
+
+function HeroIcon({ name, className, style }: { name: string; className?: string; style?: React.CSSProperties }) {
+  const Icon = iconMap[name] || Megaphone
+  return <Icon className={className} style={style} />
+}
 
 const services = [
   { icon: Megaphone, title: 'Meta Ads', description: 'Facebook & Instagram advertising to reach your target audience.' },
@@ -23,11 +41,24 @@ const stats = [
 ]
 
 export function HomePage() {
+  const [heroCards, setHeroCards] = useState<HeroCard[]>([])
+  const [cardsLoading, setCardsLoading] = useState(true)
+
+  useEffect(() => {
+    getHeroCards(true).then((data) => {
+      setHeroCards(data)
+    }).catch(() => {
+      // fallback to default cards
+    }).finally(() => {
+      setCardsLoading(false)
+    })
+  }, [])
+
   return (
     <>
       <SEO title="Home" description="City Ads Hub - Turning Local Reach Into Real Customers. Digital marketing agency specializing in Meta Ads, Google Ads, SEO, web development and business registration." />
 
-      <section className="relative min-h-screen flex items-center pt-16 overflow-hidden">
+      <section className="relative min-h-screen flex items-center" data-section="hero">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-blue-50" />
         <div className="absolute top-20 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
         <div className="absolute bottom-20 left-0 w-80 h-80 bg-orange/5 rounded-full blur-3xl" />
@@ -85,36 +116,61 @@ export function HomePage() {
             >
               <div className="relative">
                 <div className="w-full aspect-square rounded-2xl bg-gradient-to-br from-primary/20 to-orange/20 p-8">
-                  <div className="grid grid-cols-2 gap-4 h-full">
-                    <div className="space-y-4">
-                      <div className="glass rounded-xl p-4 h-24 flex items-center">
-                        <div className="text-center w-full">
-                          <Megaphone className="h-6 w-6 text-primary mx-auto mb-1" />
-                          <span className="text-xs font-medium">Meta Ads</span>
+                  {cardsLoading ? (
+                    <div className="flex items-center justify-center h-full">
+                      <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+                    </div>
+                  ) : heroCards.length === 0 ? (
+                    <div className="grid grid-cols-2 gap-4 h-full">
+                      <div className="space-y-4">
+                        <div className="glass rounded-xl p-4 h-24 flex items-center">
+                          <div className="text-center w-full">
+                            <Megaphone className="h-6 w-6 text-primary mx-auto mb-1" />
+                            <span className="text-xs font-medium">Meta Ads</span>
+                          </div>
+                        </div>
+                        <div className="glass rounded-xl p-4 h-24 flex items-center">
+                          <div className="text-center w-full">
+                            <Globe className="h-6 w-6 text-green mx-auto mb-1" />
+                            <span className="text-xs font-medium">SEO</span>
+                          </div>
                         </div>
                       </div>
-                      <div className="glass rounded-xl p-4 h-24 flex items-center">
-                        <div className="text-center w-full">
-                          <Globe className="h-6 w-6 text-green mx-auto mb-1" />
-                          <span className="text-xs font-medium">SEO</span>
+                      <div className="space-y-4 pt-8">
+                        <div className="glass rounded-xl p-4 h-24 flex items-center">
+                          <div className="text-center w-full">
+                            <Smartphone className="h-6 w-6 text-orange mx-auto mb-1" />
+                            <span className="text-xs font-medium">Web Dev</span>
+                          </div>
+                        </div>
+                        <div className="glass rounded-xl p-4 h-24 flex items-center">
+                          <div className="text-center w-full">
+                            <Camera className="h-6 w-6 text-primary mx-auto mb-1" />
+                            <span className="text-xs font-medium">Media</span>
+                          </div>
                         </div>
                       </div>
                     </div>
-                    <div className="space-y-4 pt-8">
-                      <div className="glass rounded-xl p-4 h-24 flex items-center">
-                        <div className="text-center w-full">
-                          <Smartphone className="h-6 w-6 text-orange mx-auto mb-1" />
-                          <span className="text-xs font-medium">Web Dev</span>
-                        </div>
-                      </div>
-                      <div className="glass rounded-xl p-4 h-24 flex items-center">
-                        <div className="text-center w-full">
-                          <Camera className="h-6 w-6 text-primary mx-auto mb-1" />
-                          <span className="text-xs font-medium">Media</span>
-                        </div>
-                      </div>
+                  ) : (
+                    <div className="grid grid-cols-2 gap-4 h-full">
+                      {heroCards.map((card, i) => {
+                        const col1 = i % 2 === 0
+                        return (
+                          <div key={card.id} className={col1 ? 'space-y-4' : 'space-y-4 pt-8'}>
+                            <div className="glass rounded-xl p-4 h-24 flex items-center">
+                              <div className="text-center w-full">
+                                <HeroIcon name={card.icon_name} className="h-6 w-6 mx-auto mb-1" style={{ color: card.color }} />
+                                <span className="text-xs font-medium block">{card.title}</span>
+                                {card.subtitle && (
+                                  <span className="text-[10px] text-gray-500 block mt-0.5">{card.subtitle}</span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        )
+                      })}
                     </div>
-                  </div>
+                  )}
                 </div>
               </div>
             </motion.div>
@@ -122,12 +178,14 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="py-20 bg-white">
+      <AboutSection />
+
+      <section className="py-20 bg-white" data-section="services">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
             className="text-center mb-16"
           >
             <h2 className="text-3xl sm:text-4xl font-bold text-dark-navy mb-4">
@@ -143,9 +201,8 @@ export function HomePage() {
               <motion.div
                 key={service.title}
                 initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.05 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.05 }}
               >
                 <Card className="group cursor-pointer h-full">
                   <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary group-hover:text-white transition-all duration-300">
@@ -160,8 +217,8 @@ export function HomePage() {
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
             className="text-center mt-12"
           >
             <Link to="/services">
@@ -174,13 +231,17 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="py-20 bg-gradient-to-br from-dark-navy to-blue-900 text-white">
+      <PortfolioSection />
+
+      <PricingSection />
+
+      <section className="py-20 bg-gradient-to-br from-dark-navy to-blue-900 text-white" data-section="cta">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <motion.div
               initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5 }}
             >
               <h2 className="text-3xl sm:text-4xl font-bold mb-6">
                 Ready to Scale Your Business?
@@ -208,8 +269,8 @@ export function HomePage() {
 
             <motion.div
               initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5 }}
               className="relative"
             >
               <div className="glass-dark rounded-2xl p-8">
@@ -232,8 +293,7 @@ export function HomePage() {
                       <div className="h-2 rounded-full bg-white/10 overflow-hidden">
                         <motion.div
                           initial={{ width: 0 }}
-                          whileInView={{ width: `${item.value}%` }}
-                          viewport={{ once: true }}
+                          animate={{ width: `${item.value}%` }}
                           transition={{ duration: 1, delay: 0.5 }}
                           className="h-full rounded-full bg-primary"
                         />
@@ -246,6 +306,8 @@ export function HomePage() {
           </div>
         </div>
       </section>
+
+      <TestimonialsSection />
     </>
   )
 }

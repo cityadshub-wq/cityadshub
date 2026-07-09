@@ -46,7 +46,7 @@ export function ServicesPage() {
     <>
       <SEO title="Services" description="Explore our comprehensive digital marketing services including Meta Ads, Google Ads, SEO, web development, and business registration." />
 
-      <section className="pt-32 pb-20 bg-gradient-to-br from-blue-50 via-white to-blue-50">
+      <section className="pt-16 pb-20 bg-gradient-to-br from-blue-50 via-white to-blue-50">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -66,7 +66,7 @@ export function ServicesPage() {
               key={category.title}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+              viewport={{ once: true, amount: 0.1 }}
               className="mb-16"
             >
               <div className="flex items-center gap-3 mb-8">
@@ -98,7 +98,7 @@ export function ServicesPage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            viewport={{ once: true, amount: 0.1 }}
             className="text-center bg-dark-navy text-white rounded-2xl p-12"
           >
             <h2 className="text-3xl font-bold mb-4">Need a Custom Solution?</h2>

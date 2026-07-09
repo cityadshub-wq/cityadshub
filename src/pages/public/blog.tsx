@@ -18,7 +18,7 @@ export function BlogPage() {
     <>
       <SEO title="Blog" description="Read expert articles on digital marketing, SEO, Google Ads, Meta Ads, business registration, and more." />
 
-      <section className="pt-32 pb-20">
+      <section className="pt-16 pb-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

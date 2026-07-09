@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useLocation, Outlet } from 'react-router-dom'
-import { LayoutDashboard, Users, Building2, Briefcase, FileText, Star, MessageSquare, Gift, BarChart3, LogOut, Menu, X, Settings, UserCog, FolderOpen, DollarSign, CreditCard, Globe } from 'lucide-react'
+import { LayoutDashboard, Users, Building2, Briefcase, FileText, Star, MessageSquare, Gift, BarChart3, LogOut, Menu, X, Settings, UserCog, FolderOpen, DollarSign, CreditCard, Globe, ChevronRight, Home, Layout } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAuth } from '@/contexts/AuthContext'
 import { Button } from '@/components/ui'
@@ -16,6 +16,7 @@ const sidebarLinks = [
   { path: '/admin/portfolio', label: 'Portfolio', icon: Building2 },
   { path: '/admin/blogs', label: 'Blog Posts', icon: FileText },
   { path: '/admin/testimonials', label: 'Testimonials', icon: Star },
+  { path: '/admin/hero-cards', label: 'Hero Cards', icon: Layout },
   { separator: 'Finance' },
   { path: '/admin/invoices', label: 'Invoices', icon: DollarSign },
   { path: '/admin/payments', label: 'Payments', icon: CreditCard },
@@ -29,19 +30,38 @@ const sidebarLinks = [
   { path: '/admin/settings', label: 'Settings', icon: Settings },
 ]
 
+const pageTitles: Record<string, string> = {
+  '/admin/dashboard': 'Dashboard',
+  '/admin/clients': 'Clients',
+  '/admin/employees': 'Employees',
+  '/admin/leads': 'Leads',
+  '/admin/services': 'Services',
+  '/admin/projects': 'Projects',
+  '/admin/portfolio': 'Portfolio',
+  '/admin/blogs': 'Blog Posts',
+  '/admin/testimonials': 'Testimonials',
+  '/admin/invoices': 'Invoices',
+  '/admin/payments': 'Payments',
+  '/admin/business-registration': 'Business Registration',
+  '/admin/messages': 'Messages',
+  '/admin/referrals': 'Referrals',
+  '/admin/analytics': 'Analytics',
+  '/admin/hero-cards': 'Hero Cards',
+  '/admin/settings': 'Settings',
+}
+
 export function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const location = useLocation()
   const { signOut, profile } = useAuth()
+  const pageTitle = pageTitles[location.pathname] || 'Admin'
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Mobile sidebar overlay */}
       {sidebarOpen && (
         <div className="fixed inset-0 z-40 bg-black/50 lg:hidden" onClick={() => setSidebarOpen(false)} />
       )}
 
-      {/* Sidebar */}
       <aside className={cn(
         'fixed top-0 left-0 z-50 h-full w-64 bg-dark-navy text-white transition-transform duration-200 lg:translate-x-0',
         sidebarOpen ? 'translate-x-0' : '-translate-x-full'
@@ -98,12 +118,18 @@ export function AdminLayout() {
         </div>
       </aside>
 
-      {/* Main content */}
       <div className="lg:pl-64">
-        <header className="sticky top-0 z-30 h-16 bg-white border-b border-gray-200 flex items-center px-4 lg:px-8">
-          <button onClick={() => setSidebarOpen(true)} className="lg:hidden mr-4 text-dark-navy">
+        <header className="sticky top-0 z-30 h-16 bg-white border-b border-gray-200 flex items-center px-4 lg:px-8 gap-3">
+          <button onClick={() => setSidebarOpen(true)} className="lg:hidden text-dark-navy hover:bg-gray-100 p-2 rounded-lg transition-colors">
             <Menu className="h-5 w-5" />
           </button>
+          <nav className="hidden sm:flex items-center gap-1.5 text-sm text-gray-500">
+            <Link to="/admin/dashboard" className="hover:text-primary transition-colors">
+              <Home className="h-3.5 w-3.5" />
+            </Link>
+            <ChevronRight className="h-3 w-3 text-gray-300" />
+            <span className="text-dark-navy font-medium">{pageTitle}</span>
+          </nav>
           <div className="flex-1" />
           <Link to="/">
             <Button variant="ghost" size="sm">View Site</Button>

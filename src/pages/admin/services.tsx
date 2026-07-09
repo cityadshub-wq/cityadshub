@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Plus, Trash2, Megaphone } from 'lucide-react'
+import { Plus, Trash2, Edit3, X, Megaphone } from 'lucide-react'
 import { Button, Card, Badge, Input, Textarea } from '@/components/ui'
 import { DataTable } from '@/components/admin/data-table'
 import { SEO } from '@/components/shared/seo'
@@ -17,13 +17,13 @@ const schema = z.object({
   icon: z.string().optional(),
   slug: z.string().optional(),
 })
-
 type FormData = z.infer<typeof schema>
 
 export function AdminServicesPage() {
   const [services, setServices] = useState<Service[]>([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
+  const [editingService, setEditingService] = useState<Service | null>(null)
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -37,16 +37,39 @@ export function AdminServicesPage() {
     setLoading(false)
   }
 
+  const openNewForm = () => {
+    setEditingService(null)
+    reset({ name: '', description: '', category: '', icon: 'Megaphone', slug: '' })
+    setShowForm(true)
+  }
+
+  const openEditForm = (svc: Service) => {
+    setEditingService(svc)
+    reset({
+      name: svc.name,
+      description: svc.description,
+      category: svc.category,
+      icon: svc.icon || 'Megaphone',
+      slug: svc.slug,
+    })
+    setShowForm(true)
+  }
+
   const onSubmit = async (data: FormData) => {
-    await supabase.from('services').insert({
+    const payload = {
       name: data.name,
       slug: data.slug || data.name.toLowerCase().replace(/\s+/g, '-'),
       description: data.description,
       category: data.category,
       icon: data.icon || 'Megaphone',
-      is_active: true,
-    })
-    reset(); setShowForm(false); load()
+    }
+
+    if (editingService) {
+      await supabase.from('services').update(payload).eq('id', editingService.id)
+    } else {
+      await supabase.from('services').insert({ ...payload, is_active: true })
+    }
+    reset(); setShowForm(false); setEditingService(null); load()
   }
 
   const toggleActive = async (id: string, current: boolean) => {
@@ -64,20 +87,26 @@ export function AdminServicesPage() {
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
         <div className="flex items-center justify-between mb-6">
           <div><h1 className="text-2xl font-bold text-dark-navy">Manage Services</h1><p className="text-gray-500 text-sm">{services.length} services</p></div>
-          <Button onClick={() => setShowForm(!showForm)}><Plus className="mr-2 h-4 w-4" /> Add Service</Button>
+          <Button onClick={openNewForm}><Plus className="mr-2 h-4 w-4" /> Add Service</Button>
         </div>
 
         {showForm && (
           <Card className="mb-6">
-            <h2 className="text-lg font-semibold text-dark-navy mb-4">New Service</h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-dark-navy">{editingService ? 'Edit Service' : 'New Service'}</h2>
+              <button onClick={() => { setShowForm(false); setEditingService(null) }} className="p-1 text-gray-400 hover:text-dark-navy"><X className="h-4 w-4" /></button>
+            </div>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div className="grid sm:grid-cols-2 gap-4">
                 <Input id="name" label="Service Name" error={errors.name?.message} {...register('name')} />
                 <Input id="category" label="Category" placeholder="e.g. Digital Marketing" error={errors.category?.message} {...register('category')} />
               </div>
-              <Input id="icon" label="Icon Name (lucide-react)" placeholder="Megaphone" {...register('icon')} />
+              <div className="grid sm:grid-cols-2 gap-4">
+                <Input id="icon" label="Icon Name (lucide-react)" placeholder="Megaphone" {...register('icon')} />
+                <Input id="slug" label="Slug" placeholder="Auto-generated if empty" {...register('slug')} />
+              </div>
               <Textarea id="description" label="Description" error={errors.description?.message} {...register('description')} />
-              <Button type="submit">Create Service</Button>
+              <Button type="submit">{editingService ? 'Update Service' : 'Create Service'}</Button>
             </form>
           </Card>
         )}
@@ -97,7 +126,10 @@ export function AdminServicesPage() {
               </button>
             )},
             { key: 'actions', header: '', render: (s: Service) => (
-              <button onClick={() => handleDelete(s.id)} className="text-red-500 hover:text-red-700"><Trash2 className="h-4 w-4" /></button>
+              <div className="flex gap-1">
+                <button onClick={() => openEditForm(s)} className="p-1.5 text-gray-400 hover:text-primary rounded-lg hover:bg-primary/5 transition-colors" title="Edit"><Edit3 className="h-4 w-4" /></button>
+                <button onClick={() => handleDelete(s.id)} className="p-1.5 text-red-500 hover:text-red-700" title="Delete"><Trash2 className="h-4 w-4" /></button>
+              </div>
             )},
           ]}
           data={services}

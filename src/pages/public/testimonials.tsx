@@ -17,7 +17,7 @@ export function TestimonialsPage() {
     <>
       <SEO title="Testimonials" description="Hear from our happy clients. Read testimonials from businesses we've helped grow with our digital marketing services." />
 
-      <section className="pt-32 pb-20">
+      <section className="pt-16 pb-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

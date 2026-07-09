@@ -21,7 +21,7 @@ export function AboutPage() {
     <>
       <SEO title="About Us" description="Learn about City Ads Hub - our mission, vision, and team. We help businesses grow with digital marketing." />
 
-      <section className="pt-32 pb-20 bg-gradient-to-br from-blue-50 via-white to-blue-50">
+      <section className="pt-16 pb-20 bg-gradient-to-br from-blue-50 via-white to-blue-50">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -59,7 +59,7 @@ export function AboutPage() {
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
+              viewport={{ once: true, amount: 0.1 }}
             >
               <h2 className="text-3xl font-bold text-dark-navy mb-6">Our Story</h2>
               <div className="space-y-4 text-gray-600">
@@ -78,7 +78,7 @@ export function AboutPage() {
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
+              viewport={{ once: true, amount: 0.1 }}
               className="grid grid-cols-2 gap-4"
             >
               {[
@@ -99,7 +99,7 @@ export function AboutPage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            viewport={{ once: true, amount: 0.1 }}
           >
             <h2 className="text-3xl font-bold text-dark-navy text-center mb-12">Meet Our Leadership</h2>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">

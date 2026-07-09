@@ -37,7 +37,7 @@ export function ContactPage() {
     <>
       <SEO title="Contact Us" description="Get in touch with City Ads Hub. Contact us for digital marketing services, business registration, or a free consultation." />
 
-      <section className="pt-32 pb-20">
+      <section className="pt-16 pb-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

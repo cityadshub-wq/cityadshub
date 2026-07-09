@@ -6,7 +6,7 @@ export function TermsConditionsPage() {
     <>
       <SEO title="Terms & Conditions" description="City Ads Hub terms and conditions governing the use of our website and services." />
 
-      <section className="pt-32 pb-20">
+      <section className="pt-16 pb-20">
         <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
             <h1 className="text-4xl font-bold text-dark-navy mb-8">Terms & Conditions</h1>

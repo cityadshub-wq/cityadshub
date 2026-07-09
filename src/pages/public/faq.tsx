@@ -34,7 +34,7 @@ export function FAQPage() {
     <>
       <SEO title="FAQ" description="Frequently asked questions about City Ads Hub services, pricing, business registration, and support." />
 
-      <section className="pt-32 pb-20">
+      <section className="pt-16 pb-20">
         <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

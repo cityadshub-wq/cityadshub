@@ -6,7 +6,7 @@ export function PrivacyPolicyPage() {
     <>
       <SEO title="Privacy Policy" description="City Ads Hub privacy policy. Learn how we collect, use, and protect your personal information." />
 
-      <section className="pt-32 pb-20">
+      <section className="pt-16 pb-20">
         <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
             <h1 className="text-4xl font-bold text-dark-navy mb-8">Privacy Policy</h1>

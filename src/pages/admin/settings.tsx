@@ -1,11 +1,12 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Save, Palette, Globe, Phone, Lock, Eye, EyeOff, CheckCircle2 } from 'lucide-react'
-import { Button, Card, Input, Textarea } from '@/components/ui'
+import { Save, Palette, Globe, Phone, Lock, Eye, EyeOff, CheckCircle2, AlertCircle, Image as ImageIcon } from 'lucide-react'
+import { Button, Card, Input, Textarea, ImageUpload } from '@/components/ui'
 import { SEO } from '@/components/shared/seo'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { getSettings, upsertSettings } from '@/services/settings'
 import { supabase } from '@/lib/supabase'
 
 const schema = z.object({
@@ -15,6 +16,10 @@ const schema = z.object({
   contact_phone: z.string().min(10),
   address: z.string().min(5),
   business_hours: z.string().min(1),
+  primary_color: z.string().optional(),
+  secondary_color: z.string().optional(),
+  logo_url: z.string().optional(),
+  favicon_url: z.string().optional(),
   whatsapp_number: z.string().optional(),
   facebook_url: z.string().optional(),
   instagram_url: z.string().optional(),
@@ -36,11 +41,14 @@ type PasswordForm = z.infer<typeof passwordSchema>
 
 export function AdminSettingsPage() {
   const [saved, setSaved] = useState(false)
+  const [saveError, setSaveError] = useState('')
+  const [loadingSettings, setLoadingSettings] = useState(true)
   const [passwordResult, setPasswordResult] = useState<{ success?: string; error?: string } | null>(null)
-  const [loading, setLoading] = useState(false)
+  const [pwLoading, setPwLoading] = useState(false)
   const [showPwd, setShowPwd] = useState(false)
+  const [existingId, setExistingId] = useState<string | null>(null)
 
-  const { register, handleSubmit } = useForm<FormData>({
+  const { register, handleSubmit, reset, setValue, watch } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
       site_name: 'City Ads Hub',
@@ -49,6 +57,8 @@ export function AdminSettingsPage() {
       contact_phone: '+91 98765 43210',
       address: 'Mumbai, Maharashtra, India',
       business_hours: 'Mon-Sat: 10:00 AM - 7:00 PM',
+      primary_color: '#1565FF',
+      secondary_color: '#081A3A',
     },
   })
 
@@ -56,14 +66,45 @@ export function AdminSettingsPage() {
     resolver: zodResolver(passwordSchema),
   })
 
-  const onSubmit = (data: FormData) => {
-    console.log('Settings saved:', data)
-    setSaved(true)
-    setTimeout(() => setSaved(false), 3000)
+  useEffect(() => {
+    getSettings().then((data) => {
+      if (data) {
+        setExistingId(data.id)
+        reset({
+          site_name: data.site_name || '',
+          tagline: data.tagline || '',
+          contact_email: data.contact_email || '',
+          contact_phone: data.contact_phone || '',
+          address: data.address || '',
+          business_hours: data.business_hours || '',
+          primary_color: data.primary_color || '#1565FF',
+          secondary_color: data.secondary_color || '#081A3A',
+          logo_url: data.logo_url || '',
+          favicon_url: data.favicon_url || '',
+          whatsapp_number: data.whatsapp_number || '',
+          facebook_url: data.facebook_url || '',
+          instagram_url: data.instagram_url || '',
+          youtube_url: data.youtube_url || '',
+          linkedin_url: data.linkedin_url || '',
+          meta_description: data.meta_description || '',
+        })
+      }
+    }).finally(() => setLoadingSettings(false))
+  }, [reset])
+
+  const onSubmit = async (data: FormData) => {
+    setSaveError('')
+    try {
+      await upsertSettings({ ...(existingId ? { id: existingId } : {}), ...data })
+      setSaved(true)
+      setTimeout(() => setSaved(false), 3000)
+    } catch (e: any) {
+      setSaveError(e.message || 'Save failed')
+    }
   }
 
   const onChangePassword = async (data: PasswordForm) => {
-    setLoading(true)
+    setPwLoading(true)
     setPasswordResult(null)
     const { error } = await supabase.auth.updateUser({ password: data.newPassword })
     if (error) setPasswordResult({ error: error.message })
@@ -71,7 +112,15 @@ export function AdminSettingsPage() {
       setPasswordResult({ success: 'Password changed successfully!' })
       pReset()
     }
-    setLoading(false)
+    setPwLoading(false)
+  }
+
+  if (loadingSettings) {
+    return (
+      <div className="space-y-6 max-w-3xl animate-pulse">
+        {[1,2,3,4].map(i => <div key={i} className="h-48 bg-gray-100 rounded-2xl" />)}
+      </div>
+    )
   }
 
   return (
@@ -99,8 +148,24 @@ export function AdminSettingsPage() {
             <Card className="mb-6">
               <h2 className="text-lg font-semibold text-dark-navy mb-4 flex items-center gap-2"><Palette className="h-5 w-5 text-primary" /> Branding</h2>
               <div className="grid sm:grid-cols-2 gap-4">
-                <Input id="primary_color" label="Primary Color" type="color" defaultValue="#1565FF" />
-                <Input id="secondary_color" label="Secondary Color" type="color" defaultValue="#081A3A" />
+                <Input id="primary_color" label="Primary Color" type="color" {...register('primary_color')} />
+                <Input id="secondary_color" label="Secondary Color" type="color" {...register('secondary_color')} />
+              </div>
+              <div className="grid sm:grid-cols-2 gap-4 mt-4">
+                <ImageUpload
+                  bucket="logos"
+                  path="logo"
+                  label="Logo"
+                  value={watch('logo_url')}
+                  onChange={(url) => setValue('logo_url', url || '')}
+                />
+                <ImageUpload
+                  bucket="logos"
+                  path="favicon"
+                  label="Favicon (32x32)"
+                  value={watch('favicon_url')}
+                  onChange={(url) => setValue('favicon_url', url || '')}
+                />
               </div>
             </Card>
 
@@ -130,6 +195,7 @@ export function AdminSettingsPage() {
             <div className="flex items-center gap-4 mb-6">
               <Button type="submit" size="lg"><Save className="mr-2 h-4 w-4" /> Save Settings</Button>
               {saved && <span className="text-sm text-green font-medium flex items-center gap-1"><CheckCircle2 className="h-4 w-4" /> Settings saved!</span>}
+              {saveError && <span className="text-sm text-red-500 flex items-center gap-1"><AlertCircle className="h-4 w-4" /> {saveError}</span>}
             </div>
           </form>
 
@@ -175,7 +241,7 @@ export function AdminSettingsPage() {
               {passwordResult?.error && (
                 <div className="text-sm p-3 rounded-lg bg-red-50 text-red-600">{passwordResult.error}</div>
               )}
-              <Button type="submit" loading={loading}>
+              <Button type="submit" loading={pwLoading}>
                 <Lock className="mr-2 h-4 w-4" /> Update Password
               </Button>
             </form>

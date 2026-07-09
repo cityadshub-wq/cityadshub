@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Plus, Calendar, Download, FileText } from 'lucide-react'
+import { Plus, Calendar, Download, FileText, Printer } from 'lucide-react'
 import { Button, Card, Badge, Input, Textarea } from '@/components/ui'
 import { DataTable } from '@/components/admin/data-table'
 import { SEO } from '@/components/shared/seo'
@@ -52,6 +52,35 @@ export function AdminInvoicesPage() {
     reset(); setShowForm(false); load()
   }
 
+  const handleDownload = (inv: Invoice) => {
+    const content = [
+      '========================================',
+      `  INVOICE: ${inv.invoice_number}`,
+      `  Date: ${new Date(inv.issued_date).toLocaleDateString()}`,
+      `  Due: ${new Date(inv.due_date).toLocaleDateString()}`,
+      '========================================',
+      '',
+      `  Client: ${inv.client_id}`,
+      `  Status: ${inv.status}`,
+      '',
+      '  Items:',
+      ...inv.items.map((item: any) => `    - ${item.description}: ₹${item.amount}`),
+      '',
+      `  Total: ₹${inv.amount.toLocaleString()}`,
+      '',
+      '========================================',
+      '  City Ads Hub',
+    ].join('\n')
+
+    const blob = new Blob([content], { type: 'text/plain' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `${inv.invoice_number}.txt`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
   return (
     <>
       <SEO title="Manage Invoices" />
@@ -87,7 +116,11 @@ export function AdminInvoicesPage() {
             { key: 'amount', header: 'Amount', render: (inv: Invoice) => <span className="font-semibold">₹{inv.amount.toLocaleString()}</span> },
             { key: 'status', header: 'Status', render: (inv: Invoice) => <Badge variant={statusColors[inv.status]}>{inv.status}</Badge> },
             { key: 'due_date', header: 'Due', render: (inv: Invoice) => <div className="flex items-center gap-1 text-xs text-gray-400"><Calendar className="h-3 w-3" />{new Date(inv.due_date).toLocaleDateString()}</div> },
-            { key: 'actions', header: '', render: () => <Download className="h-4 w-4 text-gray-400" /> },
+            { key: 'actions', header: '', render: (inv: Invoice) => (
+              <button onClick={() => handleDownload(inv)} className="p-1.5 text-gray-400 hover:text-primary rounded-lg hover:bg-primary/5 transition-colors" title="Download">
+                <Download className="h-4 w-4" />
+              </button>
+            )},
           ]}
           data={invoices}
           loading={loading}

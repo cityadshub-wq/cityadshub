@@ -31,7 +31,7 @@ export function PricingPage() {
     <>
       <SEO title="Pricing" description="View our transparent pricing plans for digital marketing services. Choose the plan that fits your business needs." />
 
-      <section className="pt-32 pb-20">
+      <section className="pt-16 pb-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -98,7 +98,7 @@ export function PricingPage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            viewport={{ once: true, amount: 0.1 }}
             className="text-center mt-12 p-8 bg-gray-50 rounded-2xl"
           >
             <p className="text-gray-600 mb-4">

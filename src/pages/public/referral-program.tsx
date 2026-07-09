@@ -21,7 +21,7 @@ export function ReferralProgramPage() {
     <>
       <SEO title="Referral Program" description="Join City Ads Hub referral program. Earn commissions by referring businesses to our digital marketing services." />
 
-      <section className="pt-32 pb-20">
+      <section className="pt-16 pb-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -63,7 +63,7 @@ export function ReferralProgramPage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            viewport={{ once: true, amount: 0.1 }}
             className="max-w-3xl mx-auto mb-16"
           >
             <h2 className="text-2xl font-bold text-dark-navy text-center mb-8">Commission Structure</h2>
@@ -83,7 +83,7 @@ export function ReferralProgramPage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            viewport={{ once: true, amount: 0.1 }}
             className="text-center bg-gradient-to-br from-dark-navy to-blue-900 text-white rounded-2xl p-12"
           >
             <h2 className="text-3xl font-bold mb-4">Ready to Start Referring?</h2>

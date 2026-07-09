@@ -191,6 +191,20 @@ export interface WebsiteSettings {
   updated_at: string
 }
 
+export interface HeroCard {
+  id: string
+  title: string
+  subtitle?: string
+  icon_name: string
+  color: string
+  image_url?: string
+  link?: string
+  sort_order: number
+  is_active: boolean
+  created_at: string
+  updated_at: string
+}
+
 export interface FAQ {
   id: string
   question: string
