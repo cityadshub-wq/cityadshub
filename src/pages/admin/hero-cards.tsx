@@ -111,7 +111,7 @@ export function AdminHeroCardsPage() {
   const [imageUrl, setImageUrl] = useState<string | null>(null)
   const [undoCard, setUndoCard] = useState<{ id: string; data: any } | null>(null)
 
-  const { register, handleSubmit, reset, formState: { errors } } = useForm<FormData>({
+  const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
   })
 
@@ -154,20 +154,20 @@ export function AdminHeroCardsPage() {
       if (editingCard) {
         await updateHeroCard(editingCard.id, {
           title: data.title,
-          subtitle: data.subtitle || null,
+          subtitle: data.subtitle || undefined,
           icon_name: data.icon_name,
           color: data.color,
           image_url: imageUrl || undefined,
-          link: data.link || null,
+          link: data.link || undefined,
         })
       } else {
         await createHeroCard({
           title: data.title,
-          subtitle: data.subtitle || null,
+          subtitle: data.subtitle || undefined,
           icon_name: data.icon_name,
           color: data.color,
           image_url: imageUrl || undefined,
-          link: data.link || null,
+          link: data.link || undefined,
           sort_order: cards.length,
           is_active: true,
         })
@@ -253,7 +253,7 @@ export function AdminHeroCardsPage() {
                         type="button"
                         onClick={() => {
                           setSelectedIcon(opt.name)
-                          reset({ ...(register('icon_name').value ? {} : {}), icon_name: opt.name })
+                          setValue('icon_name', opt.name)
                         }}
                         className={`flex flex-col items-center gap-1 p-2 rounded-xl border text-xs transition-all ${
                           isSelected ? 'border-primary bg-primary/5 text-primary' : 'border-gray-200 text-gray-500 hover:border-gray-300'
@@ -332,7 +332,7 @@ export function AdminHeroCardsPage() {
             ) : (
               <div className="space-y-2">
                 {cards.map((card, index) => (
-                  <Card key={card.id} className="flex items-center gap-3 p-4" hover={false}>
+                  <Card key={card.id} className="flex items-center gap-3 p-4">
                     <div className="text-gray-300 cursor-grab">
                       <GripVertical className="h-4 w-4" />
                     </div>
