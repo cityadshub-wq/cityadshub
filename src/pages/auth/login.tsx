@@ -8,6 +8,7 @@ import { motion } from 'framer-motion'
 import { Button, Input, Card } from '@/components/ui'
 import { useAuth } from '@/contexts/AuthContext'
 import { SEO } from '@/components/shared/seo'
+import { setRememberMe } from '@/lib/supabase'
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email'),
@@ -18,6 +19,7 @@ type LoginForm = z.infer<typeof loginSchema>
 
 export function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
+  const [remember, setRemember] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const { signIn, signInWithMagicLink } = useAuth()
@@ -30,6 +32,7 @@ export function LoginPage() {
   const onSubmit = async (data: LoginForm) => {
     setLoading(true)
     setError(null)
+    setRememberMe(remember)
     const { error } = await signIn(data.email, data.password)
     if (error) setError(error)
     else navigate('/client/dashboard')
@@ -92,7 +95,7 @@ export function LoginPage() {
 
               <div className="flex items-center justify-between text-sm">
                 <label className="flex items-center gap-2">
-                  <input type="checkbox" className="rounded border-gray-300" />
+                  <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} className="rounded border-gray-300" />
                   <span className="text-gray-600">Remember me</span>
                 </label>
                 <Link to="/auth/reset-password" className="text-primary hover:underline">Forgot password?</Link>

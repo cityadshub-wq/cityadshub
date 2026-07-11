@@ -3,4 +3,27 @@ import { createClient } from '@supabase/supabase-js'
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || ''
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || ''
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+const REMEMBER_ME_KEY = 'city-ads-hub-remember-me'
+
+// "Remember me" support: the flag itself always lives in localStorage (just a
+// preference, not session data), but it decides which storage the actual auth
+// session token gets written to — localStorage persists across browser
+// restarts, sessionStorage clears when the tab/browser closes.
+function getSessionStorageTarget(): Storage {
+  const remember = window.localStorage.getItem(REMEMBER_ME_KEY)
+  return remember === 'false' ? window.sessionStorage : window.localStorage
+}
+
+export function setRememberMe(remember: boolean) {
+  window.localStorage.setItem(REMEMBER_ME_KEY, String(remember))
+}
+
+const dynamicAuthStorage = {
+  getItem: (key: string) => getSessionStorageTarget().getItem(key),
+  setItem: (key: string, value: string) => getSessionStorageTarget().setItem(key, value),
+  removeItem: (key: string) => getSessionStorageTarget().removeItem(key),
+}
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: { storage: dynamicAuthStorage },
+})

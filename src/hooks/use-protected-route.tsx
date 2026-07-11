@@ -12,7 +12,7 @@ export function ProtectedRoute({ allowedRoles }: { allowedRoles?: string[] }) {
     )
   }
 
-  if (!user) return <Navigate to="/auth/login" replace />
+  if (!user) return <Navigate to={allowedRoles?.includes('admin') ? '/admin/login' : '/auth/login'} replace />
 
   if (allowedRoles && profile && !allowedRoles.includes(profile.role)) {
     return <Navigate to="/" replace />
