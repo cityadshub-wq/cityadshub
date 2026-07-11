@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Save, Palette, Globe, Phone, Lock, Eye, EyeOff, CheckCircle2, AlertCircle, Image as ImageIcon } from 'lucide-react'
+import { Save, Palette, Globe, Phone, Lock, CheckCircle2, AlertCircle, Share2, FileText, Code } from 'lucide-react'
 import { Button, Card, Input, Textarea, ImageUpload } from '@/components/ui'
 import { SEO } from '@/components/shared/seo'
 import { useForm } from 'react-hook-form'
@@ -12,20 +12,27 @@ import { supabase } from '@/lib/supabase'
 const schema = z.object({
   site_name: z.string().min(1),
   tagline: z.string().min(1),
+  meta_description: z.string().optional(),
+  meta_keywords: z.string().optional(),
+  logo_url: z.string().optional(),
+  favicon_url: z.string().optional(),
+  primary_color: z.string().optional(),
+  secondary_color: z.string().optional(),
   contact_email: z.string().email(),
   contact_phone: z.string().min(10),
   address: z.string().min(5),
   business_hours: z.string().min(1),
-  primary_color: z.string().optional(),
-  secondary_color: z.string().optional(),
-  logo_url: z.string().optional(),
-  favicon_url: z.string().optional(),
   whatsapp_number: z.string().optional(),
+  success_message: z.string().optional(),
+  form_title: z.string().optional(),
   facebook_url: z.string().optional(),
   instagram_url: z.string().optional(),
   youtube_url: z.string().optional(),
   linkedin_url: z.string().optional(),
-  meta_description: z.string().optional(),
+  footer_text: z.string().optional(),
+  footer_description: z.string().optional(),
+  copyright_text: z.string().optional(),
+  analytics_code: z.string().optional(),
 })
 type FormData = z.infer<typeof schema>
 
@@ -73,20 +80,27 @@ export function AdminSettingsPage() {
         reset({
           site_name: data.site_name || '',
           tagline: data.tagline || '',
+          meta_description: data.meta_description || '',
+          meta_keywords: data.meta_keywords || '',
+          logo_url: data.logo_url || '',
+          favicon_url: data.favicon_url || '',
+          primary_color: data.primary_color || '#1565FF',
+          secondary_color: data.secondary_color || '#081A3A',
           contact_email: data.contact_email || '',
           contact_phone: data.contact_phone || '',
           address: data.address || '',
           business_hours: data.business_hours || '',
-          primary_color: data.primary_color || '#1565FF',
-          secondary_color: data.secondary_color || '#081A3A',
-          logo_url: data.logo_url || '',
-          favicon_url: data.favicon_url || '',
           whatsapp_number: data.whatsapp_number || '',
+          success_message: data.success_message || '',
+          form_title: data.form_title || '',
           facebook_url: data.facebook_url || '',
           instagram_url: data.instagram_url || '',
           youtube_url: data.youtube_url || '',
           linkedin_url: data.linkedin_url || '',
-          meta_description: data.meta_description || '',
+          footer_text: data.footer_text || '',
+          footer_description: data.footer_description || '',
+          copyright_text: data.copyright_text || '',
+          analytics_code: data.analytics_code || '',
         })
       }
     }).finally(() => setLoadingSettings(false))
@@ -98,8 +112,8 @@ export function AdminSettingsPage() {
       await upsertSettings({ ...(existingId ? { id: existingId } : {}), ...data })
       setSaved(true)
       setTimeout(() => setSaved(false), 3000)
-    } catch (e: any) {
-      setSaveError(e.message || 'Save failed')
+    } catch (e) {
+      setSaveError(e instanceof Error ? e.message : 'Save failed')
     }
   }
 
@@ -118,7 +132,7 @@ export function AdminSettingsPage() {
   if (loadingSettings) {
     return (
       <div className="space-y-6 max-w-3xl animate-pulse">
-        {[1,2,3,4].map(i => <div key={i} className="h-48 bg-gray-100 rounded-2xl" />)}
+        {[1,2,3,4,5,6].map(i => <div key={i} className="h-48 bg-gray-100 rounded-2xl" />)}
       </div>
     )
   }
@@ -142,6 +156,7 @@ export function AdminSettingsPage() {
                   <Input id="tagline" label="Tagline" {...register('tagline')} />
                 </div>
                 <Textarea id="meta_description" label="Meta Description" {...register('meta_description')} />
+                <Input id="meta_keywords" label="Meta Keywords (comma separated)" {...register('meta_keywords')} />
               </div>
             </Card>
 
@@ -179,16 +194,36 @@ export function AdminSettingsPage() {
                 <Input id="whatsapp_number" label="WhatsApp Number" {...register('whatsapp_number')} />
                 <Textarea id="address" label="Address" {...register('address')} />
                 <Input id="business_hours" label="Business Hours" {...register('business_hours')} />
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <Input id="success_message" label="Success Message" {...register('success_message')} />
+                  <Input id="form_title" label="Form Title" {...register('form_title')} />
+                </div>
               </div>
             </Card>
 
             <Card className="mb-6">
-              <h2 className="text-lg font-semibold text-dark-navy mb-4 flex items-center gap-2"><Globe className="h-5 w-5 text-primary" /> Social Media</h2>
+              <h2 className="text-lg font-semibold text-dark-navy mb-4 flex items-center gap-2"><Share2 className="h-5 w-5 text-primary" /> Social Media</h2>
               <div className="grid sm:grid-cols-2 gap-4">
                 <Input id="facebook_url" label="Facebook URL" {...register('facebook_url')} />
                 <Input id="instagram_url" label="Instagram URL" {...register('instagram_url')} />
                 <Input id="youtube_url" label="YouTube URL" {...register('youtube_url')} />
                 <Input id="linkedin_url" label="LinkedIn URL" {...register('linkedin_url')} />
+              </div>
+            </Card>
+
+            <Card className="mb-6">
+              <h2 className="text-lg font-semibold text-dark-navy mb-4 flex items-center gap-2"><FileText className="h-5 w-5 text-primary" /> Footer</h2>
+              <div className="space-y-4">
+                <Input id="footer_text" label="Footer Text" {...register('footer_text')} />
+                <Textarea id="footer_description" label="Footer Description" {...register('footer_description')} />
+                <Input id="copyright_text" label="Copyright Text" {...register('copyright_text')} />
+              </div>
+            </Card>
+
+            <Card className="mb-6">
+              <h2 className="text-lg font-semibold text-dark-navy mb-4 flex items-center gap-2"><Code className="h-5 w-5 text-primary" /> Advanced</h2>
+              <div className="space-y-4">
+                <Textarea id="analytics_code" label="Analytics Code (Google Analytics etc.)" rows={5} placeholder="Paste your tracking code here..." {...register('analytics_code')} />
               </div>
             </Card>
 
