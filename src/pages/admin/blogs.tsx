@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Plus, Calendar, Trash2, Eye, Edit3, X, CheckCircle2 } from 'lucide-react'
+import { Plus, Calendar, Trash2, Eye, Edit3, X, CheckCircle2, Send } from 'lucide-react'
 import { Button, Card, Badge, Input, Textarea, ImageUpload } from '@/components/ui'
 import { DataTable } from '@/components/admin/data-table'
 import { SEO } from '@/components/shared/seo'
@@ -110,6 +110,11 @@ export function AdminBlogsPage() {
     if (confirm('Delete this post?')) { await deleteBlogPost(id); load() }
   }
 
+  const handlePublishNow = async (post: BlogPost) => {
+    await updateBlogPost(post.id, { status: 'published', published_at: new Date().toISOString() })
+    load()
+  }
+
   return (
     <>
       <SEO title="Blog Management" />
@@ -147,6 +152,9 @@ export function AdminBlogsPage() {
                     <option value="published">Published</option>
                     <option value="scheduled">Scheduled</option>
                   </select>
+                  {watch('status') !== 'published' && (
+                    <p className="text-xs text-orange mt-1">Only Published posts are visible on the website.</p>
+                  )}
                 </div>
                 {watch('status') === 'scheduled' && (
                   <Input id="scheduled_at" label="Schedule Date" type="datetime-local" {...register('scheduled_at')} />
@@ -226,6 +234,9 @@ export function AdminBlogsPage() {
             )},
             { key: 'actions', header: '', render: (p: BlogPost) => (
               <div className="flex gap-1">
+                {p.status !== 'published' && (
+                  <button onClick={() => handlePublishNow(p)} className="p-1.5 text-gray-400 hover:text-green rounded-lg hover:bg-green/5 transition-colors" title="Publish now"><Send className="h-4 w-4" /></button>
+                )}
                 <button onClick={() => openEditForm(p)} className="p-1.5 text-gray-400 hover:text-primary rounded-lg hover:bg-primary/5 transition-colors" title="Edit"><Edit3 className="h-4 w-4" /></button>
                 <button onClick={() => setViewingPost(p)} className="p-1.5 text-gray-400 hover:text-green rounded-lg hover:bg-green/5 transition-colors" title="Preview"><Eye className="h-4 w-4" /></button>
                 <button onClick={() => handleDelete(p.id)} className="p-1.5 text-gray-400 hover:text-red-500 rounded-lg hover:bg-red/5 transition-colors" title="Delete"><Trash2 className="h-4 w-4" /></button>

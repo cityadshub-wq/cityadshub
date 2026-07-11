@@ -45,6 +45,11 @@ export function AdminFAQsPage() {
     if (confirm('Delete this FAQ?')) { await deleteFAQ(id); await load() }
   }
 
+  async function toggleActive(item: FAQ) {
+    await updateFAQ(item.id, { is_active: !item.is_active })
+    await load()
+  }
+
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
       <SEO title="FAQs" />
@@ -65,10 +70,13 @@ export function AdminFAQsPage() {
             <div className="grid sm:grid-cols-3 gap-4">
               <Input label="Category" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} placeholder="General, Pricing, etc." />
               <Input label="Order" type="number" value={String(form.order)} onChange={(e) => setForm({ ...form, order: parseInt(e.target.value) || 0 })} />
-              <label className="flex items-center gap-2 pt-6 cursor-pointer">
-                <input type="checkbox" checked={form.is_active} onChange={(e) => setForm({ ...form, is_active: e.target.checked })} className="rounded border-gray-300" />
-                <span className="text-sm font-medium">Active</span>
-              </label>
+              <div className="pt-6">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" checked={form.is_active} onChange={(e) => setForm({ ...form, is_active: e.target.checked })} className="rounded border-gray-300" />
+                  <span className="text-sm font-medium">Active</span>
+                </label>
+                {!form.is_active && <p className="text-xs text-orange mt-1">Inactive FAQs are hidden from the website.</p>}
+              </div>
             </div>
             <Button onClick={handleSave}>{editing ? 'Update' : 'Create'}</Button>
           </div>
@@ -81,7 +89,9 @@ export function AdminFAQsPage() {
           { key: 'category', header: 'Category', render: (f: FAQ) => f.category ? <Badge variant="primary">{f.category}</Badge> : '-' },
           { key: 'order', header: 'Order' },
           { key: 'is_active', header: 'Status', render: (f: FAQ) => (
-            <span className={cn('text-xs px-2 py-1 rounded-lg font-medium', f.is_active ? 'bg-green/10 text-green' : 'bg-gray-100 text-gray-500')}>{f.is_active ? 'Active' : 'Inactive'}</span>
+            <button onClick={() => toggleActive(f)} className={cn('text-xs px-2 py-1 rounded-lg font-medium', f.is_active ? 'bg-green/10 text-green' : 'bg-gray-100 text-gray-500')}>
+              {f.is_active ? 'Active' : 'Inactive'}
+            </button>
           )},
           { key: 'actions', header: '', render: (f: FAQ) => (
             <div className="flex gap-1">

@@ -22,9 +22,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       setUser(session?.user ?? null)
-      if (session?.user) fetchProfile(session.user.id)
+      // Wait for the profile fetch too, not just the session check — otherwise `loading`
+      // goes false while `profile` is still null, and ProtectedRoute's role check
+      // (`allowedRoles && profile && ...`) skips itself during that window and briefly
+      // renders protected content for ANY authenticated user regardless of role.
+      if (session?.user) await fetchProfile(session.user.id)
       setLoading(false)
     })
 
