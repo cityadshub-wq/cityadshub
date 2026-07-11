@@ -161,6 +161,23 @@ VALUES
   ('story', 'Our Story', 'How We Started', 'City Ads Hub was born from a simple observation: local businesses were struggling to compete in the digital age. We started as a small Meta Ads agency in Mumbai, helping local restaurants and shops reach customers online.', 5)
 ON CONFLICT (section) DO NOTHING;
 
+-- growth_timeline/pricing_plans/portfolio_categories had no unique constraint on their
+-- natural key, so "ON CONFLICT DO NOTHING" below was never actually able to detect a
+-- conflict — every re-run of this file inserted a fresh set of duplicate rows (only the
+-- auto-generated `id` was unique). Dedupe any rows already duplicated by a prior run,
+-- then add a real unique constraint so this is safe to re-run going forward.
+DELETE FROM growth_timeline a USING growth_timeline b WHERE a.year = b.year AND a.id > b.id;
+ALTER TABLE growth_timeline DROP CONSTRAINT IF EXISTS growth_timeline_year_key;
+ALTER TABLE growth_timeline ADD CONSTRAINT growth_timeline_year_key UNIQUE (year);
+
+DELETE FROM pricing_plans a USING pricing_plans b WHERE a.slug = b.slug AND a.id > b.id;
+ALTER TABLE pricing_plans DROP CONSTRAINT IF EXISTS pricing_plans_slug_key;
+ALTER TABLE pricing_plans ADD CONSTRAINT pricing_plans_slug_key UNIQUE (slug);
+
+DELETE FROM portfolio_categories a USING portfolio_categories b WHERE a.slug = b.slug AND a.id > b.id;
+ALTER TABLE portfolio_categories DROP CONSTRAINT IF EXISTS portfolio_categories_slug_key;
+ALTER TABLE portfolio_categories ADD CONSTRAINT portfolio_categories_slug_key UNIQUE (slug);
+
 INSERT INTO growth_timeline (year, title, description, sort_order)
 VALUES
   ('2020', 'Founded in Mumbai', 'Started as a small Meta Ads agency helping local businesses.', 1),
@@ -168,14 +185,14 @@ VALUES
   ('2022', 'Team of 25+', 'Grew to 25+ professionals across marketing, design, and tech.', 3),
   ('2023', '100+ Clients', 'Reached 100+ satisfied clients across India.', 4),
   ('2024', 'Full-Service Agency', '50+ team members serving 150+ clients with end-to-end solutions.', 5)
-ON CONFLICT DO NOTHING;
+ON CONFLICT (year) DO NOTHING;
 
 INSERT INTO pricing_plans (name, slug, price, description, features, is_popular, sort_order)
 VALUES
   ('Starter', 'starter', 9999, 'Perfect for small businesses starting their digital journey.', ARRAY['Social Media Management (2 platforms)', 'Basic SEO Audit', 'Monthly Performance Report', 'Email Support', '1 Social Post per Week'], false, 1),
   ('Business', 'business', 24999, 'Ideal for growing businesses ready to scale to the next level.', ARRAY['Social Media Management (4 platforms)', 'Google Ads Management', 'Advanced SEO', 'Content Creation (8 posts/month)', 'Website Optimization', 'Priority Support'], true, 2),
   ('Enterprise', 'enterprise', 49999, 'Complete solution for established businesses with premium needs.', ARRAY['Full Digital Marketing Suite', 'All Ad Platforms Management', 'Premium SEO + Local SEO', 'Video Production (2 videos/month)', 'Website Development', 'Dedicated Account Manager', '24/7 Priority Support'], false, 3)
-ON CONFLICT DO NOTHING;
+ON CONFLICT (slug) DO NOTHING;
 
 INSERT INTO portfolio_categories (name, slug, sort_order)
 VALUES
@@ -184,7 +201,7 @@ VALUES
   ('Marketing', 'marketing', 2),
   ('Branding', 'branding', 3),
   ('SEO', 'seo', 4)
-ON CONFLICT DO NOTHING;
+ON CONFLICT (slug) DO NOTHING;
 
 INSERT INTO social_links (platform, url, icon, sort_order)
 VALUES
@@ -415,3 +432,36 @@ DO $$ BEGIN
       AND is_admin()
     );
 END $$;
+
+-- 8. Blog: fields needed for full CRUD (author display name, ordering, featured flag,
+-- and a plain-text category to replace the old category_id free-text field).
+ALTER TABLE blog_posts ADD COLUMN IF NOT EXISTS author TEXT;
+ALTER TABLE blog_posts ADD COLUMN IF NOT EXISTS sort_order INT DEFAULT 0;
+ALTER TABLE blog_posts ADD COLUMN IF NOT EXISTS is_featured BOOLEAN DEFAULT false;
+ALTER TABLE blog_posts ADD COLUMN IF NOT EXISTS category TEXT;
+
+-- one-time backfill from the old category_id column, if it exists and category is unset
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'blog_posts' AND column_name = 'category_id') THEN
+    UPDATE blog_posts SET category = category_id WHERE category IS NULL;
+  END IF;
+END $$;
+
+-- 9. Realtime: broadcast row changes on every public-facing content table so the
+-- website (and any open admin tab) updates live with no manual refresh. Each table
+-- is added individually since ALTER PUBLICATION ... ADD TABLE errors (rather than
+-- no-oping) if the table is already a publication member.
+DO $$ BEGIN ALTER PUBLICATION supabase_realtime ADD TABLE services; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER PUBLICATION supabase_realtime ADD TABLE blog_posts; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER PUBLICATION supabase_realtime ADD TABLE social_links; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER PUBLICATION supabase_realtime ADD TABLE website_settings; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER PUBLICATION supabase_realtime ADD TABLE pricing_plans; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER PUBLICATION supabase_realtime ADD TABLE testimonials; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER PUBLICATION supabase_realtime ADD TABLE faqs; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER PUBLICATION supabase_realtime ADD TABLE about_content; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER PUBLICATION supabase_realtime ADD TABLE growth_timeline; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER PUBLICATION supabase_realtime ADD TABLE site_content; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER PUBLICATION supabase_realtime ADD TABLE portfolio_items; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER PUBLICATION supabase_realtime ADD TABLE hero_cards; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER PUBLICATION supabase_realtime ADD TABLE portfolio_categories; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER PUBLICATION supabase_realtime ADD TABLE media_items; EXCEPTION WHEN duplicate_object THEN NULL; END $$;

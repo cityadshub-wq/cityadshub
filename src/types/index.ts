@@ -70,6 +70,10 @@ export interface BlogPost {
   read_time?: number
   seo_title?: string
   seo_description?: string
+  author?: string
+  sort_order?: number
+  is_featured?: boolean
+  category?: string
   created_at: string
   updated_at: string
 }
