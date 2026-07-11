@@ -25,7 +25,7 @@ const fadeUp = {
 
 export function FAQSection() {
   const [openIndex, setOpenIndex] = useState<number | null>(0)
-  const { data, isLoading } = useRealtimeQuery<FAQ[]>('faqs', ['faqs'], getFAQs)
+  const { data, isLoading, isError } = useRealtimeQuery<FAQ[]>('faqs', ['faqs'], getFAQs)
 
   if (isLoading) {
     return (
@@ -36,7 +36,11 @@ export function FAQSection() {
   }
 
   const faqs = data ?? []
-  const displayFaqs = faqs.length > 0 ? faqs : fallbackFAQs
+  // The CMS is reachable and simply has no FAQs configured — hide the section rather
+  // than show placeholder content pretending to be real. Only fall back to the sample
+  // FAQs if the query itself failed (e.g. before the database migration has been run).
+  if (!isError && faqs.length === 0) return null
+  const displayFaqs = isError ? fallbackFAQs : faqs
 
   return (
     <section id="faq" className="py-24 bg-gray-50">
