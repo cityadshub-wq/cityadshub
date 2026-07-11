@@ -53,7 +53,7 @@ export function BlogPostPage() {
               <span className="text-sm text-gray-400 flex items-center gap-1">
                 <Calendar className="h-3.5 w-3.5" /> {new Date(post.created_at).toLocaleDateString()}
               </span>
-              {post.read_time && (
+              {!!post.read_time && (
                 <span className="text-sm text-gray-400 flex items-center gap-1">
                   <Clock className="h-3.5 w-3.5" /> {post.read_time} min read
                 </span>

@@ -65,7 +65,7 @@ export function BlogPage() {
                         <div className="flex items-center gap-3">
                           <span className="flex items-center gap-1"><User className="h-3 w-3" /> {post.author || 'City Ads Hub'}</span>
                           <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> {new Date(post.created_at).toLocaleDateString()}</span>
-                          {post.read_time && (
+                          {!!post.read_time && (
                             <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {post.read_time} min</span>
                           )}
                         </div>

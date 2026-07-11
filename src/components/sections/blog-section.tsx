@@ -76,7 +76,7 @@ export function BlogSection() {
                         <Calendar className="h-3 w-3" />
                         {post.date || new Date(post.created_at).toLocaleDateString()}
                       </span>
-                      {post.read_time && (
+                      {!!post.read_time && (
                         <span className="text-xs text-gray-400 flex items-center gap-1">
                           <Clock className="h-3 w-3" />
                           {post.read_time} min read
