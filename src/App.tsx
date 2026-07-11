@@ -9,8 +9,11 @@ import { BusinessRegistrationPage } from '@/pages/public/business-registration'
 import { ReferralProgramPage } from '@/pages/public/referral-program'
 import { PrivacyPolicyPage } from '@/pages/public/privacy-policy'
 import { TermsConditionsPage } from '@/pages/public/terms-conditions'
+import { BlogPage } from '@/pages/public/blog'
+import { BlogPostPage } from '@/pages/public/blog-post'
 
 import { LoginPage } from '@/pages/auth/login'
+import { AdminLoginPage } from '@/pages/auth/admin-login'
 import { RegisterPage } from '@/pages/auth/register'
 import { ResetPasswordPage } from '@/pages/auth/reset-password'
 
@@ -40,6 +43,7 @@ import { AdminPricingPage } from '@/pages/admin/pricing'
 import { AdminPortfolioCategoriesPage } from '@/pages/admin/portfolio-categories'
 import { AdminFAQsPage } from '@/pages/admin/faqs'
 import { AdminMediaPage } from '@/pages/admin/media'
+import { AdminSocialLinksPage } from '@/pages/admin/social-links'
 
 import { AboutSection } from '@/components/sections/about-section'
 import { ServicesSection } from '@/components/sections/services-section'
@@ -79,7 +83,8 @@ export default function App() {
         <Route path="/portfolio" element={<Navigate to="/#portfolio" replace />} />
         <Route path="/pricing" element={<Navigate to="/#pricing" replace />} />
         <Route path="/testimonials" element={<Navigate to="/#testimonials" replace />} />
-        <Route path="/blog" element={<Navigate to="/#blog" replace />} />
+        <Route path="/blog" element={<PublicLayout><BlogPage /></PublicLayout>} />
+        <Route path="/blog/:slug" element={<PublicLayout><BlogPostPage /></PublicLayout>} />
         <Route path="/faq" element={<Navigate to="/#faq" replace />} />
         <Route path="/contact" element={<Navigate to="/#contact" replace />} />
         <Route path="/business-registration" element={<PublicLayout><BusinessRegistrationPage /></PublicLayout>} />
@@ -88,6 +93,7 @@ export default function App() {
         <Route path="/terms-conditions" element={<PublicLayout><TermsConditionsPage /></PublicLayout>} />
 
         <Route path="/auth/login" element={<LoginPage />} />
+        <Route path="/admin/login" element={<AdminLoginPage />} />
         <Route path="/auth/register" element={<RegisterPage />} />
         <Route path="/auth/reset-password" element={<ResetPasswordPage />} />
 
@@ -121,6 +127,7 @@ export default function App() {
             <Route path="/admin/portfolio-categories" element={<AdminPortfolioCategoriesPage />} />
             <Route path="/admin/faqs" element={<AdminFAQsPage />} />
             <Route path="/admin/media" element={<AdminMediaPage />} />
+            <Route path="/admin/social-links" element={<AdminSocialLinksPage />} />
             <Route path="/admin/settings" element={<AdminSettingsPage />} />
           </Route>
         </Route>
