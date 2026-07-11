@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useLocation, Outlet } from 'react-router-dom'
-import { LayoutDashboard, Users, Briefcase, FileText, Star, MessageSquare, Gift, BarChart3, LogOut, Menu, X, Settings, UserCog, FolderOpen, DollarSign, CreditCard, Globe, ChevronRight, Home, Layout, Image, HelpCircle, Tags, Target, ShoppingBag, Palette } from 'lucide-react'
+import { LayoutDashboard, Users, Briefcase, FileText, Star, MessageSquare, Gift, BarChart3, LogOut, Menu, X, Settings, UserCog, FolderOpen, DollarSign, CreditCard, Globe, ChevronRight, Home, Layout, Image, HelpCircle, Tags, Target, ShoppingBag, Palette, Share2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAuth } from '@/contexts/AuthContext'
 import { Button } from '@/components/ui'
@@ -18,6 +18,7 @@ const sidebarLinks = [
   { path: '/admin/testimonials', label: 'Testimonials', icon: Star },
   { path: '/admin/faqs', label: 'FAQs', icon: HelpCircle },
   { path: '/admin/hero-cards', label: 'Hero Cards', icon: Palette },
+  { path: '/admin/social-links', label: 'Social Links', icon: Share2 },
   { separator: 'Media' },
   { path: '/admin/media', label: 'Media Library', icon: Image },
   { separator: 'Business' },
@@ -48,6 +49,7 @@ const pageTitles: Record<string, string> = {
   '/admin/testimonials': 'Testimonials',
   '/admin/faqs': 'FAQs',
   '/admin/hero-cards': 'Hero Cards',
+  '/admin/social-links': 'Social Links',
   '/admin/media': 'Media Library',
   '/admin/leads': 'Leads',
   '/admin/clients': 'Clients',

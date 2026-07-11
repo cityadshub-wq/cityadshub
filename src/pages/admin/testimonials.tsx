@@ -15,6 +15,8 @@ const schema = z.object({
   company: z.string().optional(),
   content: z.string().min(10),
   rating: z.string().min(1),
+  video_url: z.string().optional(),
+  sort_order: z.string().optional(),
   is_active: z.boolean().optional(),
 })
 type FormData = z.infer<typeof schema>
@@ -41,7 +43,7 @@ export function AdminTestimonialsPage() {
   const openNewForm = () => {
     setEditingItem(null)
     setImageUrl(null)
-    reset({ client_name: '', company: '', content: '', rating: '5', is_active: true })
+    reset({ client_name: '', company: '', content: '', rating: '5', video_url: '', sort_order: '0', is_active: true })
     setShowForm(true)
   }
 
@@ -53,6 +55,8 @@ export function AdminTestimonialsPage() {
       company: item.company || '',
       content: item.content,
       rating: String(item.rating),
+      video_url: item.video_url || '',
+      sort_order: String(item.sort_order || 0),
       is_active: item.is_active,
     })
     setShowForm(true)
@@ -65,6 +69,8 @@ export function AdminTestimonialsPage() {
       content: data.content,
       rating: parseInt(data.rating),
       image_url: imageUrl || undefined,
+      video_url: data.video_url || undefined,
+      sort_order: data.sort_order ? parseInt(data.sort_order) : 0,
       is_active: data.is_active ?? true,
     }
 
@@ -103,14 +109,16 @@ export function AdminTestimonialsPage() {
                 <Input id="client_name" label="Client Name" error={errors.client_name?.message} {...register('client_name')} />
                 <Input id="company" label="Company" {...register('company')} />
               </div>
-              <div className="grid sm:grid-cols-2 gap-4">
+              <div className="grid sm:grid-cols-3 gap-4">
                 <Input id="rating" label="Rating (1-5)" type="number" min="1" max="5" error={errors.rating?.message} {...register('rating')} />
+                <Input id="sort_order" label="Display Order" type="number" {...register('sort_order')} />
                 <label className="flex items-center gap-2 pt-6">
                   <input type="checkbox" {...register('is_active')} className="rounded border-gray-300 text-primary focus:ring-primary/20" />
                   <span className="text-sm font-medium text-dark-navy">Active</span>
                 </label>
               </div>
               <Textarea id="content" label="Testimonial" error={errors.content?.message} {...register('content')} />
+              <Input id="video_url" label="Video URL (optional)" placeholder="https://youtube.com/..." {...register('video_url')} />
               <ImageUpload bucket="gallery" path="testimonials" label="Client Photo" value={editingItem?.image_url || null} onChange={(url) => setImageUrl(url)} />
               <Button type="submit">{editingItem ? 'Update Testimonial' : 'Save'}</Button>
             </form>

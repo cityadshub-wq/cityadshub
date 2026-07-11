@@ -118,7 +118,32 @@ export function AdminOurWorkPage() {
                 <span className="text-sm font-medium text-dark-navy">Featured Project</span>
               </label>
             </div>
-            <ImageUpload label="Project Image" bucket="media" value={form.images[0] || ''} onChange={(url) => setForm({ ...form, images: url ? [url] : [] })} />
+            <div>
+              <label className="block text-sm font-medium text-dark-navy mb-1.5">Gallery</label>
+              {form.images.length > 0 && (
+                <div className="grid grid-cols-4 sm:grid-cols-6 gap-3 mb-3">
+                  {form.images.map((img, i) => (
+                    <div key={img} className="relative rounded-lg overflow-hidden border border-gray-200">
+                      <img src={img} alt="" className="h-20 w-full object-cover" />
+                      <button
+                        type="button"
+                        onClick={() => setForm({ ...form, images: form.images.filter((_, idx) => idx !== i) })}
+                        className="absolute top-1 right-1 p-1 bg-white/90 rounded-full shadow hover:bg-white transition-colors"
+                      >
+                        <X className="h-3 w-3 text-gray-600" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <ImageUpload
+                key={form.images.length}
+                label="Add Image"
+                bucket="media"
+                value={null}
+                onChange={(url) => { if (url) setForm({ ...form, images: [...form.images, url] }) }}
+              />
+            </div>
             <Button loading={saving} onClick={handleSave}>{editing ? 'Update Project' : 'Create Project'}</Button>
           </div>
         </Card>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Save, Palette, Globe, Phone, Lock, CheckCircle2, AlertCircle, Share2, FileText, Code } from 'lucide-react'
+import { Save, Palette, Globe, Phone, Lock, CheckCircle2, AlertCircle, FileText, Code } from 'lucide-react'
 import { Button, Card, Input, Textarea, ImageUpload } from '@/components/ui'
 import { SEO } from '@/components/shared/seo'
 import { useForm } from 'react-hook-form'
@@ -25,10 +25,6 @@ const schema = z.object({
   whatsapp_number: z.string().optional(),
   success_message: z.string().optional(),
   form_title: z.string().optional(),
-  facebook_url: z.string().optional(),
-  instagram_url: z.string().optional(),
-  youtube_url: z.string().optional(),
-  linkedin_url: z.string().optional(),
   footer_text: z.string().optional(),
   footer_description: z.string().optional(),
   copyright_text: z.string().optional(),
@@ -93,10 +89,6 @@ export function AdminSettingsPage() {
           whatsapp_number: data.whatsapp_number || '',
           success_message: data.success_message || '',
           form_title: data.form_title || '',
-          facebook_url: data.facebook_url || '',
-          instagram_url: data.instagram_url || '',
-          youtube_url: data.youtube_url || '',
-          linkedin_url: data.linkedin_url || '',
           footer_text: data.footer_text || '',
           footer_description: data.footer_description || '',
           copyright_text: data.copyright_text || '',
@@ -202,17 +194,8 @@ export function AdminSettingsPage() {
             </Card>
 
             <Card className="mb-6">
-              <h2 className="text-lg font-semibold text-dark-navy mb-4 flex items-center gap-2"><Share2 className="h-5 w-5 text-primary" /> Social Media</h2>
-              <div className="grid sm:grid-cols-2 gap-4">
-                <Input id="facebook_url" label="Facebook URL" {...register('facebook_url')} />
-                <Input id="instagram_url" label="Instagram URL" {...register('instagram_url')} />
-                <Input id="youtube_url" label="YouTube URL" {...register('youtube_url')} />
-                <Input id="linkedin_url" label="LinkedIn URL" {...register('linkedin_url')} />
-              </div>
-            </Card>
-
-            <Card className="mb-6">
               <h2 className="text-lg font-semibold text-dark-navy mb-4 flex items-center gap-2"><FileText className="h-5 w-5 text-primary" /> Footer</h2>
+              <p className="text-xs text-gray-500 mb-4 -mt-2">Manage social media links from the <a href="/admin/social-links" className="text-primary hover:underline">Social Links</a> page.</p>
               <div className="space-y-4">
                 <Input id="footer_text" label="Footer Text" {...register('footer_text')} />
                 <Textarea id="footer_description" label="Footer Description" {...register('footer_description')} />

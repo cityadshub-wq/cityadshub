@@ -16,7 +16,7 @@ export function AdminPricingPage() {
   const [saving, setSaving] = useState(false)
   const [form, setForm] = useState({
     name: '', price: 0, original_price: 0, currency: 'INR', interval: 'month',
-    description: '', features: '', is_popular: false, button_text: 'Get Started',
+    description: '', features: '', is_popular: false, button_text: 'Get Started', button_link: '',
     sort_order: 0, is_active: true,
   })
 
@@ -26,14 +26,14 @@ export function AdminPricingPage() {
     try { const data = await getAllPricingPlans(); setPlans(data) } catch (e) { console.error(e) } finally { setLoading(false) }
   }
 
-  function resetForm() { setForm({ name: '', price: 0, original_price: 0, currency: 'INR', interval: 'month', description: '', features: '', is_popular: false, button_text: 'Get Started', sort_order: 0, is_active: true }) }
+  function resetForm() { setForm({ name: '', price: 0, original_price: 0, currency: 'INR', interval: 'month', description: '', features: '', is_popular: false, button_text: 'Get Started', button_link: '', sort_order: 0, is_active: true }) }
   function openNew() { setEditing(null); resetForm(); setShowForm(true) }
   function openEdit(p: PricingPlan) {
     setEditing(p)
     setForm({
       name: p.name, price: p.price, original_price: p.original_price || 0, currency: p.currency,
       interval: p.interval, description: p.description || '', features: (p.features || []).join(', '),
-      is_popular: p.is_popular, button_text: p.button_text, sort_order: p.sort_order, is_active: p.is_active,
+      is_popular: p.is_popular, button_text: p.button_text, button_link: p.button_link || '', sort_order: p.sort_order, is_active: p.is_active,
     })
     setShowForm(true)
   }
@@ -46,7 +46,7 @@ export function AdminPricingPage() {
         price: form.price, original_price: form.original_price || undefined,
         currency: form.currency, interval: form.interval,
         description: form.description, features: form.features.split(',').map(f => f.trim()).filter(Boolean),
-        is_popular: form.is_popular, button_text: form.button_text,
+        is_popular: form.is_popular, button_text: form.button_text, button_link: form.button_link || undefined,
         sort_order: form.sort_order, is_active: form.is_active,
       }
       if (editing) { await updatePricingPlan(editing.id, payload) }
@@ -85,8 +85,9 @@ export function AdminPricingPage() {
             </div>
             <Textarea label="Description" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
             <Textarea label="Features (comma separated)" value={form.features} onChange={(e) => setForm({ ...form, features: e.target.value })} placeholder="Feature 1, Feature 2, Feature 3" />
-            <div className="grid sm:grid-cols-2 gap-4">
+            <div className="grid sm:grid-cols-3 gap-4">
               <Input label="Button Text" value={form.button_text} onChange={(e) => setForm({ ...form, button_text: e.target.value })} />
+              <Input label="Button Link" value={form.button_link} onChange={(e) => setForm({ ...form, button_link: e.target.value })} placeholder="/#contact" />
               <Input label="Sort Order" type="number" value={String(form.sort_order)} onChange={(e) => setForm({ ...form, sort_order: parseInt(e.target.value) || 0 })} />
             </div>
             <div className="flex items-center gap-6">
