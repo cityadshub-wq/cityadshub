@@ -5,16 +5,8 @@ import { ProtectedRoute } from '@/hooks/use-protected-route'
 import { AdminLayout } from '@/components/admin/admin-layout'
 
 import { HomePage } from '@/pages/public/home'
-import { AboutPage } from '@/pages/public/about'
-import { ServicesPage } from '@/pages/public/services'
-import { PortfolioPage } from '@/pages/public/portfolio'
-import { PricingPage } from '@/pages/public/pricing'
-import { TestimonialsPage } from '@/pages/public/testimonials'
-import { ContactPage } from '@/pages/public/contact'
 import { BusinessRegistrationPage } from '@/pages/public/business-registration'
 import { ReferralProgramPage } from '@/pages/public/referral-program'
-import { BlogPage } from '@/pages/public/blog'
-import { FAQPage } from '@/pages/public/faq'
 import { PrivacyPolicyPage } from '@/pages/public/privacy-policy'
 import { TermsConditionsPage } from '@/pages/public/terms-conditions'
 
@@ -41,6 +33,22 @@ import { AdminInvoicesPage } from '@/pages/admin/invoices'
 import { AdminPaymentsPage } from '@/pages/admin/payments'
 import { AdminHeroCardsPage } from '@/pages/admin/hero-cards'
 import { AdminSettingsPage } from '@/pages/admin/settings'
+import { AdminSiteContentPage } from '@/pages/admin/site-content'
+import { AdminAboutPage } from '@/pages/admin/about'
+import { AdminOurWorkPage } from '@/pages/admin/our-work'
+import { AdminPricingPage } from '@/pages/admin/pricing'
+import { AdminPortfolioCategoriesPage } from '@/pages/admin/portfolio-categories'
+import { AdminFAQsPage } from '@/pages/admin/faqs'
+import { AdminMediaPage } from '@/pages/admin/media'
+
+import { AboutSection } from '@/components/sections/about-section'
+import { ServicesSection } from '@/components/sections/services-section'
+import { PortfolioSection } from '@/components/sections/portfolio-section'
+import { PricingSection } from '@/components/sections/pricing-section'
+import { BlogSection } from '@/components/sections/blog-section'
+import { TestimonialsSection } from '@/components/sections/testimonials-section'
+import { FAQSection } from '@/components/sections/faq-section'
+import { ContactSection } from '@/components/sections/contact-section'
 
 function PublicLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -53,17 +61,29 @@ export default function App() {
     <>
       <Navbar />
       <Routes>
-        <Route path="/" element={<PublicLayout><HomePage /></PublicLayout>} />
-        <Route path="/about" element={<PublicLayout><AboutPage /></PublicLayout>} />
-        <Route path="/services" element={<PublicLayout><ServicesPage /></PublicLayout>} />
-        <Route path="/portfolio" element={<PublicLayout><PortfolioPage /></PublicLayout>} />
-        <Route path="/pricing" element={<PublicLayout><PricingPage /></PublicLayout>} />
-        <Route path="/testimonials" element={<PublicLayout><TestimonialsPage /></PublicLayout>} />
-        <Route path="/contact" element={<PublicLayout><ContactPage /></PublicLayout>} />
+        <Route path="/" element={
+          <main>
+            <HomePage />
+            <AboutSection />
+            <ServicesSection />
+            <PortfolioSection />
+            <PricingSection />
+            <BlogSection />
+            <TestimonialsSection />
+            <FAQSection />
+            <ContactSection />
+          </main>
+        } />
+        <Route path="/about" element={<Navigate to="/#about" replace />} />
+        <Route path="/services" element={<Navigate to="/#services" replace />} />
+        <Route path="/portfolio" element={<Navigate to="/#portfolio" replace />} />
+        <Route path="/pricing" element={<Navigate to="/#pricing" replace />} />
+        <Route path="/testimonials" element={<Navigate to="/#testimonials" replace />} />
+        <Route path="/blog" element={<Navigate to="/#blog" replace />} />
+        <Route path="/faq" element={<Navigate to="/#faq" replace />} />
+        <Route path="/contact" element={<Navigate to="/#contact" replace />} />
         <Route path="/business-registration" element={<PublicLayout><BusinessRegistrationPage /></PublicLayout>} />
         <Route path="/referral-program" element={<PublicLayout><ReferralProgramPage /></PublicLayout>} />
-        <Route path="/blog" element={<PublicLayout><BlogPage /></PublicLayout>} />
-        <Route path="/faq" element={<PublicLayout><FAQPage /></PublicLayout>} />
         <Route path="/privacy-policy" element={<PublicLayout><PrivacyPolicyPage /></PublicLayout>} />
         <Route path="/terms-conditions" element={<PublicLayout><TermsConditionsPage /></PublicLayout>} />
 
@@ -94,6 +114,13 @@ export default function App() {
             <Route path="/admin/invoices" element={<AdminInvoicesPage />} />
             <Route path="/admin/payments" element={<AdminPaymentsPage />} />
             <Route path="/admin/hero-cards" element={<AdminHeroCardsPage />} />
+            <Route path="/admin/site-content" element={<AdminSiteContentPage />} />
+            <Route path="/admin/about" element={<AdminAboutPage />} />
+            <Route path="/admin/our-work" element={<AdminOurWorkPage />} />
+            <Route path="/admin/pricing" element={<AdminPricingPage />} />
+            <Route path="/admin/portfolio-categories" element={<AdminPortfolioCategoriesPage />} />
+            <Route path="/admin/faqs" element={<AdminFAQsPage />} />
+            <Route path="/admin/media" element={<AdminMediaPage />} />
             <Route path="/admin/settings" element={<AdminSettingsPage />} />
           </Route>
         </Route>

@@ -17,7 +17,14 @@ export interface Service {
   icon: string
   category: string
   is_active: boolean
+  image_url?: string
+  icon_url?: string
+  button_text?: string
+  button_link?: string
+  sort_order?: number
+  is_featured?: boolean
   created_at: string
+  updated_at?: string
 }
 
 export interface Project {
@@ -60,6 +67,9 @@ export interface BlogPost {
   status: 'draft' | 'published' | 'scheduled'
   scheduled_at?: string
   published_at?: string
+  read_time?: number
+  seo_title?: string
+  seo_description?: string
   created_at: string
   updated_at: string
 }
@@ -76,7 +86,14 @@ export interface PortfolioItem {
   images: string[]
   videos?: string[]
   is_featured: boolean
+  full_description?: string
+  technology?: string[]
+  project_url?: string
+  sort_order?: number
+  seo_title?: string
+  seo_description?: string
   created_at: string
+  updated_at?: string
 }
 
 export interface Testimonial {
@@ -87,7 +104,10 @@ export interface Testimonial {
   rating: number
   image_url?: string
   is_active: boolean
+  video_url?: string
+  sort_order?: number
   created_at: string
+  updated_at?: string
 }
 
 export interface ContactMessage {
@@ -188,7 +208,102 @@ export interface WebsiteSettings {
   business_hours: string
   meta_description?: string
   meta_keywords?: string
+  analytics_code?: string
+  footer_text?: string
+  footer_description?: string
+  copyright_text?: string
+  success_message?: string
+  form_title?: string
   updated_at: string
+}
+
+export interface SiteContent {
+  id: string
+  page: string
+  section: string
+  key: string
+  value: string
+  type: string
+  created_at: string
+  updated_at: string
+}
+
+export interface AboutContent {
+  id: string
+  section: string
+  title?: string
+  subtitle?: string
+  description?: string
+  content?: string
+  image_url?: string
+  images?: string[]
+  icon?: string
+  sort_order: number
+  is_active: boolean
+  created_at: string
+  updated_at: string
+}
+
+export interface GrowthTimeline {
+  id: string
+  year: string
+  title: string
+  description?: string
+  icon?: string
+  image_url?: string
+  sort_order: number
+  is_active: boolean
+  created_at: string
+}
+
+export interface PricingPlan {
+  id: string
+  name: string
+  slug?: string
+  price: number
+  original_price?: number
+  currency: string
+  interval: string
+  description?: string
+  features: string[]
+  is_popular: boolean
+  button_text: string
+  button_link?: string
+  sort_order: number
+  is_active: boolean
+  created_at: string
+  updated_at: string
+}
+
+export interface PortfolioCategory {
+  id: string
+  name: string
+  slug?: string
+  sort_order: number
+  is_active: boolean
+  created_at: string
+}
+
+export interface MediaItem {
+  id: string
+  name: string
+  url: string
+  type: string
+  mime_type?: string
+  size: number
+  alt_text?: string
+  folder: string
+  created_at: string
+}
+
+export interface SocialLink {
+  id: string
+  platform: string
+  url: string
+  icon?: string
+  sort_order: number
+  is_active: boolean
+  created_at: string
 }
 
 export interface HeroCard {
