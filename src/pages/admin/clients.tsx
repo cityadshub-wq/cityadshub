@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Mail, Phone, Calendar, Trash2, Users } from 'lucide-react'
-import { Card, Badge, Button } from '@/components/ui'
+import { Card, Badge } from '@/components/ui'
 import { DataTable } from '@/components/admin/data-table'
 import { SEO } from '@/components/shared/seo'
 import { getClients, deleteClient } from '@/services/clients'

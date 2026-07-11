@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Plus, Trash2, Calendar, FolderOpen } from 'lucide-react'
-import { Button, Card, Badge, Input, Textarea } from '@/components/ui'
+import { Button, Card, Input, Textarea } from '@/components/ui'
 import { DataTable } from '@/components/admin/data-table'
 import { SEO } from '@/components/shared/seo'
 import { getProjects, createProject, updateProject, deleteProject } from '@/services/projects'
@@ -20,8 +20,6 @@ const schema = z.object({
   end_date: z.string().optional(),
 })
 type FormData = z.infer<typeof schema>
-
-const statusColors: Record<string, 'default' | 'primary' | 'green'> = { active: 'primary', completed: 'green', on_hold: 'default' }
 
 export function AdminProjectsPage() {
   const [projects, setProjects] = useState<Project[]>([])

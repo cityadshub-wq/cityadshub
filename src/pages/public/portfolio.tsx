@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { ExternalLink, ChevronRight } from 'lucide-react'
-import { Button, Card, Badge } from '@/components/ui'
+import { ExternalLink } from 'lucide-react'
+import { Card, Badge } from '@/components/ui'
 import { SEO } from '@/components/shared/seo'
 import { cn } from '@/lib/utils'
 

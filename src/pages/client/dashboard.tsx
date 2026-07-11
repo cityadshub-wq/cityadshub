@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { FileText, FolderOpen, DollarSign, MessageSquare, Bell, Download, TrendingUp } from 'lucide-react'
+import { FileText, FolderOpen, DollarSign, MessageSquare, Bell, Download } from 'lucide-react'
 import { Card, Badge } from '@/components/ui'
 import { useAuth } from '@/contexts/AuthContext'
 import { SEO } from '@/components/shared/seo'

@@ -55,7 +55,7 @@ export function AdminMessagesPage() {
               ) : null
             )},
           ]}
-          data={messages as unknown as Record<string, unknown>[]}
+          data={messages}
           loading={loading}
           onRowClick={(m) => setSelected(m as unknown as ContactMessage)}
         />

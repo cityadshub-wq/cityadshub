@@ -109,7 +109,7 @@ export function AdminHeroCardsPage() {
   const [selectedIcon, setSelectedIcon] = useState('Megaphone')
   const [selectedColor, setSelectedColor] = useState('#FF6B00')
   const [imageUrl, setImageUrl] = useState<string | null>(null)
-  const [undoCard, setUndoCard] = useState<{ id: string; data: any } | null>(null)
+  const [undoCard, setUndoCard] = useState<{ id: string; data: HeroCard } | null>(null)
 
   const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -175,8 +175,8 @@ export function AdminHeroCardsPage() {
       setSaved(true)
       setTimeout(() => setSaved(false), 2000)
       reset(); setShowForm(false); setEditingCard(null); setImageUrl(null); load()
-    } catch (e: any) {
-      setSaveError(e.message || 'Failed to save')
+    } catch (e) {
+      setSaveError(e instanceof Error ? e.message : 'Failed to save')
     }
   }
 

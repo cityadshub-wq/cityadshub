@@ -1,6 +1,5 @@
 import { motion } from 'framer-motion'
 import { Calendar, User, ArrowRight } from 'lucide-react'
-import { Link } from 'react-router-dom'
 import { Card, Badge } from '@/components/ui'
 import { SEO } from '@/components/shared/seo'
 

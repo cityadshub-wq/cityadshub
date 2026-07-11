@@ -2,7 +2,7 @@ import { motion } from 'framer-motion'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Phone, Mail, MapPin, Clock, Send, ArrowRight } from 'lucide-react'
+import { Phone, Mail, MapPin, Clock, Send } from 'lucide-react'
 import { Button, Input, Textarea, Card } from '@/components/ui'
 import { SEO } from '@/components/shared/seo'
 

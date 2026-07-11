@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { ChevronDown, Search } from 'lucide-react'
+import { ChevronDown } from 'lucide-react'
 import { Card } from '@/components/ui'
 import { SEO } from '@/components/shared/seo'
 import { cn } from '@/lib/utils'

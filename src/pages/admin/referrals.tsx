@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Gift, TrendingUp, Users, Wallet, Calendar } from 'lucide-react'
+import { Gift, TrendingUp, Wallet, Calendar } from 'lucide-react'
 import { Card, Badge } from '@/components/ui'
 import { DataTable } from '@/components/admin/data-table'
 import { SEO } from '@/components/shared/seo'
@@ -67,7 +67,7 @@ export function AdminReferralsPage() {
               <div className="flex items-center gap-1 text-xs text-gray-400"><Calendar className="h-3 w-3" />{new Date(r.created_at).toLocaleDateString()}</div>
             )},
           ]}
-          data={referrals as unknown as Record<string, unknown>[]}
+          data={referrals}
           loading={loading}
         />
       </motion.div>

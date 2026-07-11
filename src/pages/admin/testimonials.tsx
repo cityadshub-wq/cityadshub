@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Plus, Star, Trash2, Edit3, X, CheckCircle2 } from 'lucide-react'
+import { Plus, Star, Trash2, Edit3, X } from 'lucide-react'
 import { Button, Card, Badge, Input, Textarea, ImageUpload } from '@/components/ui'
 import { DataTable } from '@/components/admin/data-table'
 import { SEO } from '@/components/shared/seo'
@@ -59,7 +59,7 @@ export function AdminTestimonialsPage() {
   }
 
   const onSubmit = async (data: FormData) => {
-    const payload: any = {
+    const payload: Omit<Testimonial, 'id' | 'created_at'> = {
       client_name: data.client_name,
       company: data.company || undefined,
       content: data.content,
@@ -152,7 +152,7 @@ export function AdminTestimonialsPage() {
               </div>
             )},
           ]}
-          data={items as unknown as Record<string, unknown>[]}
+          data={items}
           loading={loading}
         />
       </motion.div>

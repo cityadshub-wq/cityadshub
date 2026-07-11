@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Plus, Search, Filter, Mail, Phone, Calendar, ArrowUpRight } from 'lucide-react'
+import { Plus, Search, Mail, Phone, Calendar, ArrowUpRight } from 'lucide-react'
 import { Button, Input, Badge, Card } from '@/components/ui'
 import { DataTable } from '@/components/admin/data-table'
 import { SEO } from '@/components/shared/seo'
-import { getLeads, updateLead, deleteLead, createLead } from '@/services/leads'
+import { getLeads, updateLead, createLead } from '@/services/leads'
 import type { Lead } from '@/types'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -157,7 +157,7 @@ export function AdminLeadsPage() {
               </button>
             )},
           ]}
-          data={filtered as unknown as Record<string, unknown>[]}
+          data={filtered}
           loading={loading}
         />
 

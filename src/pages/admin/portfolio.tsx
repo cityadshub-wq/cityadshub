@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Plus, ExternalLink, Calendar, Trash2, Edit3, X, CheckCircle2, Star } from 'lucide-react'
+import { Plus, ExternalLink, Calendar, Trash2, Edit3, X, Star } from 'lucide-react'
 import { Button, Card, Badge, Input, Textarea, ImageUpload } from '@/components/ui'
 import { DataTable } from '@/components/admin/data-table'
 import { SEO } from '@/components/shared/seo'
@@ -28,7 +28,7 @@ export function AdminPortfolioPage() {
   const [editingItem, setEditingItem] = useState<PortfolioItem | null>(null)
   const [uploadedImages, setUploadedImages] = useState<string[]>([])
 
-  const { register, handleSubmit, reset, setValue, watch, formState: { errors } } = useForm<FormData>({
+  const { register, handleSubmit, reset, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
   })
 
@@ -63,7 +63,7 @@ export function AdminPortfolioPage() {
   }
 
   const onSubmit = async (data: FormData) => {
-    const payload: any = {
+    const payload: Omit<PortfolioItem, 'id' | 'created_at'> = {
       ...data,
       slug: data.title.toLowerCase().replace(/\s+/g, '-'),
       images: uploadedImages,
@@ -74,7 +74,7 @@ export function AdminPortfolioPage() {
     if (editingItem) {
       await updatePortfolioItem(editingItem.id, payload)
     } else {
-      await createPortfolioItem(payload as any)
+      await createPortfolioItem(payload)
     }
     reset(); setShowForm(false); setEditingItem(null); setUploadedImages([]); load()
   }
@@ -175,7 +175,7 @@ export function AdminPortfolioPage() {
               </div>
             )},
           ]}
-          data={items as unknown as Record<string, unknown>[]}
+          data={items}
           loading={loading}
         />
       </motion.div>

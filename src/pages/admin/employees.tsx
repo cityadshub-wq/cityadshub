@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Mail, Phone, Calendar, Shield, Users, Plus, X } from 'lucide-react'
-import { Card, Badge, Button, Input } from '@/components/ui'
+import { Mail, Calendar, Shield, Users, Plus, X } from 'lucide-react'
+import { Card, Button, Input } from '@/components/ui'
 import { DataTable } from '@/components/admin/data-table'
 import { SEO } from '@/components/shared/seo'
 import { getEmployees, updateEmployee } from '@/services/employees'
@@ -52,8 +52,8 @@ export function AdminEmployeesPage() {
       setEmail(''); setFullName(''); setPassword(''); setRole('employee')
       setShowForm(false)
       load()
-    } catch (err: any) {
-      setError(err.message)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Something went wrong')
     } finally {
       setCreating(false)
     }

@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { Upload, X, ImageIcon, Loader2 } from 'lucide-react'
+import { X, ImageIcon, Loader2 } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { cn } from '@/lib/utils'
 

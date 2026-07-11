@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { Megaphone, Search, Globe, Camera, Video, Smartphone, BarChart3, Building2, CheckCircle2, ArrowRight } from 'lucide-react'
+import { Megaphone, Camera, Smartphone, Building2, CheckCircle2, ArrowRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { Button, Card } from '@/components/ui'
 import { SEO } from '@/components/shared/seo'
@@ -61,7 +61,7 @@ export function ServicesPage() {
             </p>
           </motion.div>
 
-          {serviceCategories.map((category, idx) => (
+          {serviceCategories.map((category) => (
             <motion.div
               key={category.title}
               initial={{ opacity: 0, y: 20 }}

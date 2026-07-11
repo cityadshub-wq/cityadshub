@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { TrendingUp, Users, DollarSign, Target, ArrowUp, ArrowDown } from 'lucide-react'
-import { Card, Badge } from '@/components/ui'
+import { Card } from '@/components/ui'
 import { SEO } from '@/components/shared/seo'
 import { supabase } from '@/lib/supabase'
 
@@ -12,7 +12,7 @@ export function AdminAnalyticsPage() {
     totalClients: 0,
     totalMessages: 0,
   })
-  const [loading, setLoading] = useState(true)
+  const [, setLoading] = useState(true)
 
   useEffect(() => {
     async function loadStats() {

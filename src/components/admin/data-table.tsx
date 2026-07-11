@@ -1,19 +1,19 @@
 import { Card } from '@/components/ui'
 
-interface Column {
+interface Column<T> {
   key: string
   header: string
-  render?: (item: any) => React.ReactNode
+  render?: (item: T) => React.ReactNode
 }
 
-interface DataTableProps {
-  columns: Column[]
-  data: any[]
+interface DataTableProps<T> {
+  columns: Column<T>[]
+  data: T[]
   loading?: boolean
-  onRowClick?: (item: any) => void
+  onRowClick?: (item: T) => void
 }
 
-export function DataTable({ columns, data, loading, onRowClick }: DataTableProps) {
+export function DataTable<T extends { id?: string | number }>({ columns, data, loading, onRowClick }: DataTableProps<T>) {
   if (loading) {
     return (
       <Card>
@@ -55,7 +55,7 @@ export function DataTable({ columns, data, loading, onRowClick }: DataTableProps
                 >
                   {columns.map((col) => (
                     <td key={col.key} className="px-4 py-3 text-sm text-dark-navy">
-                      {col.render ? col.render(item) : item[col.key] ?? '-'}
+                      {col.render ? col.render(item) : String(item[col.key as keyof T] ?? '-')}
                     </td>
                   ))}
                 </tr>

@@ -20,7 +20,7 @@ const schema = z.object({
   status: z.enum(['draft', 'published', 'scheduled']),
   scheduled_at: z.string().optional(),
 })
-type FormData = z.infer<typeof schema>
+type FormData = z.infer<typeof schema> & { featured_image?: string }
 
 export function AdminBlogsPage() {
   const [posts, setPosts] = useState<BlogPost[]>([])
@@ -66,7 +66,7 @@ export function AdminBlogsPage() {
 
   const onSubmit = async (data: FormData) => {
     if (!user) return
-    const payload: any = {
+    const payload: Omit<BlogPost, 'id' | 'created_at' | 'updated_at' | 'author_id'> = {
       title: data.title,
       slug: data.title.toLowerCase().replace(/\s+/g, '-'),
       content: data.content,
@@ -134,7 +134,7 @@ export function AdminBlogsPage() {
                 path="featured"
                 label="Featured Image"
                 value={editingPost?.featured_image || null}
-                onChange={(url) => setValue('featured_image' as any, url || undefined)}
+                onChange={(url) => setValue('featured_image', url || undefined)}
               />
               <Textarea id="excerpt" label="Excerpt" error={errors.excerpt?.message} {...register('excerpt')} />
               <div>
@@ -201,7 +201,7 @@ export function AdminBlogsPage() {
               </div>
             )},
           ]}
-          data={posts as unknown as Record<string, unknown>[]}
+          data={posts}
           loading={loading}
         />
       </motion.div>

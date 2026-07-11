@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Search, Building2, Download, Calendar } from 'lucide-react'
+import { Search, Calendar } from 'lucide-react'
 import { Input, Badge, Card, Button } from '@/components/ui'
 import { DataTable } from '@/components/admin/data-table'
 import { SEO } from '@/components/shared/seo'
@@ -84,7 +84,7 @@ export function AdminBusinessRegistrationPage() {
               </div>
             )},
           ]}
-          data={filtered as unknown as Record<string, unknown>[]}
+          data={filtered}
           loading={loading}
           onRowClick={(r) => setSelected(r as unknown as BusinessRegistrationRequest)}
         />

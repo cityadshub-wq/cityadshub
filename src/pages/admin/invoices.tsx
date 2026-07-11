@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Plus, Calendar, Download, FileText, Printer } from 'lucide-react'
+import { Plus, Calendar, Download, FileText } from 'lucide-react'
 import { Button, Card, Badge, Input, Textarea } from '@/components/ui'
 import { DataTable } from '@/components/admin/data-table'
 import { SEO } from '@/components/shared/seo'
@@ -8,7 +8,7 @@ import { supabase } from '@/lib/supabase'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
-import type { Invoice } from '@/types'
+import type { Invoice, InvoiceItem } from '@/types'
 
 const schema = z.object({
   client_id: z.string().min(1),
@@ -64,7 +64,7 @@ export function AdminInvoicesPage() {
       `  Status: ${inv.status}`,
       '',
       '  Items:',
-      ...inv.items.map((item: any) => `    - ${item.description}: ₹${item.amount}`),
+      ...inv.items.map((item: InvoiceItem) => `    - ${item.description}: ₹${item.amount}`),
       '',
       `  Total: ₹${inv.amount.toLocaleString()}`,
       '',

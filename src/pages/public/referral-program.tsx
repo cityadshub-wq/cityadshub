@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { Gift, Users, TrendingUp, Wallet, Share2, ArrowRight } from 'lucide-react'
+import { Gift, Users, Wallet, Share2, ArrowRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { Button, Card } from '@/components/ui'
 import { SEO } from '@/components/shared/seo'
