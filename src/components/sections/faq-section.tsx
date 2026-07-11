@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronDown, HelpCircle, Loader2 } from 'lucide-react'
 import { Card } from '@/components/ui'
 import { cn } from '@/lib/utils'
 import { getFAQs } from '@/services/faqs'
+import { useRealtimeQuery } from '@/hooks/use-realtime-query'
 import type { FAQ } from '@/types'
 
 const fallbackFAQs = [
@@ -23,21 +24,10 @@ const fadeUp = {
 }
 
 export function FAQSection() {
-  const [faqs, setFaqs] = useState<FAQ[]>([])
-  const [loading, setLoading] = useState(true)
   const [openIndex, setOpenIndex] = useState<number | null>(0)
+  const { data, isLoading } = useRealtimeQuery<FAQ[]>('faqs', ['faqs'], getFAQs)
 
-  useEffect(() => {
-    getFAQs().then((data) => {
-      setFaqs(data.length > 0 ? data : fallbackFAQs)
-    }).catch(() => {
-      setFaqs(fallbackFAQs)
-    }).finally(() => {
-      setLoading(false)
-    })
-  }, [])
-
-  if (loading) {
+  if (isLoading) {
     return (
       <section id="faq" className="py-24 bg-gray-50">
         <div className="flex items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-gray-400" /></div>
@@ -45,6 +35,7 @@ export function FAQSection() {
     )
   }
 
+  const faqs = data ?? []
   const displayFaqs = faqs.length > 0 ? faqs : fallbackFAQs
 
   return (

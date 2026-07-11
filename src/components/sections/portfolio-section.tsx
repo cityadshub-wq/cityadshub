@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { ExternalLink, Loader2 } from 'lucide-react'
 import { Card, Badge } from '@/components/ui'
 import { cn } from '@/lib/utils'
 import { getPortfolioItems } from '@/services/portfolio'
-import type { PortfolioItem } from '@/types'
+import { useRealtimeQuery } from '@/hooks/use-realtime-query'
 
 const categories = ['All', 'Websites', 'Marketing', 'Branding', 'SEO']
 
@@ -17,17 +17,7 @@ const fadeUp = {
 
 export function PortfolioSection() {
   const [activeCategory, setActiveCategory] = useState('All')
-  const [items, setItems] = useState<PortfolioItem[]>([])
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    getPortfolioItems().then((data) => {
-      setItems(data)
-    }).catch(() => {
-    }).finally(() => {
-      setLoading(false)
-    })
-  }, [])
+  const { data: items = [], isLoading: loading } = useRealtimeQuery('portfolio_items', ['portfolio_items'], getPortfolioItems)
 
   const filtered = activeCategory === 'All'
     ? items

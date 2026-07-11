@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { Star, Quote, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react'
 import { Card } from '@/components/ui'
 import { cn } from '@/lib/utils'
+import { useRealtimeQuery } from '@/hooks/use-realtime-query'
 import { getTestimonials } from '@/services/testimonials'
 import type { Testimonial } from '@/types'
 
@@ -21,20 +22,13 @@ const fadeUp = {
 }
 
 export function TestimonialsSection() {
-  const [testimonials, setTestimonials] = useState<Testimonial[]>([])
-  const [loading, setLoading] = useState(true)
+  const { data, isLoading, isError } = useRealtimeQuery('testimonials', ['testimonials'], getTestimonials)
   const [current, setCurrent] = useState(0)
 
-  useEffect(() => {
-    getTestimonials().then((data) => {
-      const active = data.filter((t) => t.is_active !== false)
-      setTestimonials(active.length > 0 ? active : fallbackTestimonials)
-    }).catch(() => {
-      setTestimonials(fallbackTestimonials)
-    }).finally(() => {
-      setLoading(false)
-    })
-  }, [])
+  const raw = data ?? []
+  const active = raw.filter((t) => t.is_active !== false)
+  const testimonials = !isError && active.length > 0 ? active : fallbackTestimonials
+  const loading = isLoading
 
   const next = useCallback(() => {
     setCurrent((prev) => (prev + 1) % testimonials.length)

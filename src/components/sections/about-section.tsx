@@ -1,11 +1,10 @@
-import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Target, Eye, Heart, Users, Award, TrendingUp, Building2, CheckCircle2, Calendar } from 'lucide-react'
 import { Card } from '@/components/ui'
 import { cn } from '@/lib/utils'
+import { useRealtimeQuery } from '@/hooks/use-realtime-query'
 import { getAboutContent } from '@/services/about'
 import { getGrowthTimeline } from '@/services/growth-timeline'
-import type { AboutContent, GrowthTimeline } from '@/types'
 
 const sectionIcons: Record<string, typeof Target> = { mission: Target, vision: Eye, values: Heart }
 
@@ -55,13 +54,8 @@ const stagger = {
 }
 
 export function AboutSection() {
-  const [aboutItems, setAboutItems] = useState<AboutContent[]>([])
-  const [timeline, setTimeline] = useState<GrowthTimeline[]>([])
-
-  useEffect(() => {
-    getAboutContent().then(setAboutItems).catch((e) => console.error(e))
-    getGrowthTimeline().then(setTimeline).catch((e) => console.error(e))
-  }, [])
+  const { data: aboutItems = [] } = useRealtimeQuery('about_content', ['about_content'], getAboutContent)
+  const { data: timeline = [] } = useRealtimeQuery('growth_timeline', ['growth_timeline'], getGrowthTimeline)
 
   const bySection = (section: string) => aboutItems.find((i) => i.section === section && i.is_active)
   const intro = bySection('intro')

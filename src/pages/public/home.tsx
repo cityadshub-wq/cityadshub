@@ -1,20 +1,15 @@
-import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowRight, BarChart3, Globe, Megaphone, Search, Smartphone, Camera, Building2, Loader2, type LucideIcon } from 'lucide-react'
+import { ArrowRight, BarChart3, Megaphone, Smartphone, Camera, Globe, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui'
 import { SEO } from '@/components/shared/seo'
 import { getHeroCards } from '@/services/hero-cards'
 import { getSiteContent } from '@/services/site-content'
-import type { HeroCard, SiteContent } from '@/types'
-
-const iconMap: Record<string, LucideIcon> = {
-  Megaphone, Search, Globe, Smartphone, Camera, BarChart3,
-  Building2, Target: Megaphone, TrendingUp: BarChart3, Zap: Megaphone,
-  Users: Megaphone, Palette: Globe, ShoppingBag: Building2,
-}
+import { useRealtimeQuery } from '@/hooks/use-realtime-query'
+import { getLucideIcon } from '@/lib/icon-map'
+import type { SiteContent } from '@/types'
 
 function HeroIcon({ name, className, style }: { name: string; className?: string; style?: React.CSSProperties }) {
-  const Icon = iconMap[name] || Megaphone
+  const Icon = getLucideIcon(name, Megaphone)
   return <Icon className={className} style={style} />
 }
 
@@ -24,25 +19,8 @@ function getContent(items: SiteContent[], key: string, fallback: string) {
 }
 
 export function HomePage() {
-  const [heroCards, setHeroCards] = useState<HeroCard[]>([])
-  const [cardsLoading, setCardsLoading] = useState(true)
-  const [content, setContent] = useState<SiteContent[]>([])
-  const [contentLoading, setContentLoading] = useState(true)
-
-  useEffect(() => {
-    getHeroCards(true).then((data) => {
-      setHeroCards(data)
-    }).catch(() => {
-    }).finally(() => {
-      setCardsLoading(false)
-    })
-    getSiteContent('home').then((data) => {
-      setContent(data)
-    }).catch(() => {
-    }).finally(() => {
-      setContentLoading(false)
-    })
-  }, [])
+  const { data: heroCards = [], isLoading: cardsLoading } = useRealtimeQuery('hero_cards', ['hero_cards'], () => getHeroCards(true))
+  const { data: content = [], isLoading: contentLoading } = useRealtimeQuery('site_content', ['site_content', 'home'], () => getSiteContent('home'))
 
   const badge = contentLoading ? 'Trusted Influencer Marketing Agency' : getContent(content, 'badge', 'Trusted Influencer Marketing Agency')
   const heroTitle = contentLoading ? 'Turning <span class="text-primary">Local Reach</span><br />Into <span class="text-orange">Real Customers</span>' : getContent(content, 'title', 'Turning Local Reach Into Real Customers')

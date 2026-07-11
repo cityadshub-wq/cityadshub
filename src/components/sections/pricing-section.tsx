@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Check, ArrowRight, Loader2 } from 'lucide-react'
+import { Check, ArrowRight } from 'lucide-react'
 import { Button, Card } from '@/components/ui'
 import { cn } from '@/lib/utils'
 import { getPricingPlans } from '@/services/pricing'
+import { useRealtimeQuery } from '@/hooks/use-realtime-query'
 import type { PricingPlan } from '@/types'
 
 const fallbackPlans = [
@@ -20,26 +20,8 @@ const fadeUp = {
 }
 
 export function PricingSection() {
-  const [plans, setPlans] = useState<PricingPlan[]>([])
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    getPricingPlans().then((data) => {
-      setPlans(data.length > 0 ? data : fallbackPlans)
-    }).catch(() => {
-      setPlans(fallbackPlans)
-    }).finally(() => {
-      setLoading(false)
-    })
-  }, [])
-
-  if (loading) {
-    return (
-      <section id="pricing" className="py-24 bg-white">
-        <div className="flex items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-gray-400" /></div>
-      </section>
-    )
-  }
+  const { data: fetchedPlans = [] } = useRealtimeQuery('pricing_plans', ['pricing_plans'], getPricingPlans)
+  const plans = fetchedPlans.length > 0 ? fetchedPlans : fallbackPlans
 
   const displayPlans = plans.length > 0 ? plans : fallbackPlans
 
