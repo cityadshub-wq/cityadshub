@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Calendar, User, ArrowRight, Loader2 } from 'lucide-react'
+import { Calendar, User, Clock, ArrowRight, Loader2 } from 'lucide-react'
 import { Card, Badge } from '@/components/ui'
 import { getBlogPosts } from '@/services/blogs'
+import { useRealtimeQuery } from '@/hooks/use-realtime-query'
 import type { BlogPost } from '@/types'
 
 const fadeUp = {
@@ -13,20 +14,10 @@ const fadeUp = {
 }
 
 export function BlogSection() {
-  const [posts, setPosts] = useState<BlogPost[]>([])
-  const [loading, setLoading] = useState(true)
+  const { data: fetchedPosts = [], isLoading: loading } = useRealtimeQuery('blog_posts', ['blog_posts'], getBlogPosts)
+  const posts = fetchedPosts.filter((p) => p.status === 'published').slice(0, 6)
 
-  useEffect(() => {
-    getBlogPosts().then((data) => {
-      const published = data.filter((p) => p.status === 'published')
-      setPosts(published.slice(0, 6))
-    }).catch(() => {
-    }).finally(() => {
-      setLoading(false)
-    })
-  }, [])
-
-  type DisplayPost = BlogPost & { category?: string; author?: string; date?: string }
+  type DisplayPost = BlogPost & { date?: string }
 
   const fallbackPosts: DisplayPost[] = [
     { id: '1', title: '10 Proven Ways to Boost Your Local SEO in 2024', excerpt: 'Local SEO is crucial for businesses targeting customers in specific areas. Here are 10 actionable strategies to improve your local search rankings.', content: '', slug: 'boost-local-seo', status: 'published', author_id: '', created_at: '2024-03-15', updated_at: '2024-03-15', category: 'SEO', author: 'Priya Patel', date: '2024-03-15' },
@@ -67,36 +58,48 @@ export function BlogSection() {
                 viewport={{ once: true, amount: 0.1 }}
                 transition={{ duration: 0.5, delay: index * 0.05 }}
               >
-                <Card className="h-full group overflow-hidden hover:-translate-y-1 transition-all duration-300">
-                  <div className="h-48 rounded-xl bg-gradient-to-br from-primary/10 to-orange/10 mb-4 flex items-center justify-center relative overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-orange/5 group-hover:scale-110 transition-transform duration-500" />
-                    <span className="text-5xl opacity-30 group-hover:opacity-50 transition-opacity group-hover:scale-110">&#9998;</span>
-                  </div>
-                  <div className="flex items-center gap-2 mb-3">
-                    <Badge variant="primary" className="text-xs">{post.category || 'General'}</Badge>
-                    {post.date && (
+                <Link to={post.slug ? `/blog/${post.slug}` : '#'}>
+                  <Card className="h-full group overflow-hidden hover:-translate-y-1 transition-all duration-300">
+                    <div className="h-48 rounded-xl bg-gradient-to-br from-primary/10 to-orange/10 mb-4 flex items-center justify-center relative overflow-hidden">
+                      {post.featured_image ? (
+                        <img src={post.featured_image} alt={post.title} className="w-full h-full object-cover" loading="lazy" />
+                      ) : (
+                        <>
+                          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-orange/5 group-hover:scale-110 transition-transform duration-500" />
+                          <span className="text-5xl opacity-30 group-hover:opacity-50 transition-opacity group-hover:scale-110">&#9998;</span>
+                        </>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2 mb-3">
+                      <Badge variant="primary" className="text-xs">{post.category || 'General'}</Badge>
                       <span className="text-xs text-gray-400 flex items-center gap-1">
                         <Calendar className="h-3 w-3" />
-                        {post.date}
+                        {post.date || new Date(post.created_at).toLocaleDateString()}
                       </span>
-                    )}
-                  </div>
-                  <h3 className="text-lg font-semibold text-dark-navy mb-2 group-hover:text-primary transition-colors line-clamp-2">
-                    {post.title}
-                  </h3>
-                  <p className="text-sm text-gray-500 mb-4 line-clamp-2">
-                    {post.excerpt || post.content || ''}
-                  </p>
-                  <div className="flex items-center justify-between text-xs text-gray-400 pt-4 border-t border-gray-100">
-                    <span className="flex items-center gap-1">
-                      <User className="h-3 w-3" />
-                      {post.author || 'City Ads Hub'}
-                    </span>
-                    <span className="flex items-center gap-1 text-primary font-medium">
-                      Read More <ArrowRight className="h-3 w-3" />
-                    </span>
-                  </div>
-                </Card>
+                      {post.read_time && (
+                        <span className="text-xs text-gray-400 flex items-center gap-1">
+                          <Clock className="h-3 w-3" />
+                          {post.read_time} min read
+                        </span>
+                      )}
+                    </div>
+                    <h3 className="text-lg font-semibold text-dark-navy mb-2 group-hover:text-primary transition-colors line-clamp-2">
+                      {post.title}
+                    </h3>
+                    <p className="text-sm text-gray-500 mb-4 line-clamp-2">
+                      {post.excerpt || post.content || ''}
+                    </p>
+                    <div className="flex items-center justify-between text-xs text-gray-400 pt-4 border-t border-gray-100">
+                      <span className="flex items-center gap-1">
+                        <User className="h-3 w-3" />
+                        {post.author || 'City Ads Hub'}
+                      </span>
+                      <span className="flex items-center gap-1 text-primary font-medium">
+                        Read More <ArrowRight className="h-3 w-3" />
+                      </span>
+                    </div>
+                  </Card>
+                </Link>
               </motion.div>
             ))}
           </div>

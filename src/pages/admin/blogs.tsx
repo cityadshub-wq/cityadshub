@@ -15,8 +15,14 @@ const schema = z.object({
   title: z.string().min(2),
   content: z.string().min(50),
   excerpt: z.string().min(10),
-  category_id: z.string().optional(),
+  category: z.string().optional(),
   tags: z.string().optional(),
+  author: z.string().optional(),
+  read_time: z.string().optional(),
+  seo_title: z.string().optional(),
+  seo_description: z.string().optional(),
+  sort_order: z.string().optional(),
+  is_featured: z.boolean().optional(),
   status: z.enum(['draft', 'published', 'scheduled']),
   scheduled_at: z.string().optional(),
 })
@@ -46,7 +52,7 @@ export function AdminBlogsPage() {
 
   const openNewForm = () => {
     setEditingPost(null)
-    reset({ title: '', content: '', excerpt: '', category_id: '', tags: '', status: 'draft', scheduled_at: '' })
+    reset({ title: '', content: '', excerpt: '', category: '', tags: '', author: '', read_time: '', seo_title: '', seo_description: '', sort_order: '0', is_featured: false, status: 'draft', scheduled_at: '' })
     setShowForm(true)
   }
 
@@ -56,8 +62,14 @@ export function AdminBlogsPage() {
       title: post.title,
       content: post.content,
       excerpt: post.excerpt,
-      category_id: post.category_id || '',
+      category: post.category || '',
       tags: post.tags?.join(', ') || '',
+      author: post.author || '',
+      read_time: post.read_time ? String(post.read_time) : '',
+      seo_title: post.seo_title || '',
+      seo_description: post.seo_description || '',
+      sort_order: String(post.sort_order || 0),
+      is_featured: post.is_featured || false,
       status: post.status,
       scheduled_at: post.scheduled_at ? post.scheduled_at.slice(0, 16) : '',
     })
@@ -72,7 +84,13 @@ export function AdminBlogsPage() {
       content: data.content,
       excerpt: data.excerpt,
       tags: data.tags ? data.tags.split(',').map(t => t.trim()) : [],
-      category_id: data.category_id || undefined,
+      category: data.category || undefined,
+      author: data.author || undefined,
+      read_time: data.read_time ? parseInt(data.read_time) : undefined,
+      seo_title: data.seo_title || undefined,
+      seo_description: data.seo_description || undefined,
+      sort_order: data.sort_order ? parseInt(data.sort_order) : 0,
+      is_featured: data.is_featured || false,
       status: data.status,
       scheduled_at: data.status === 'scheduled' && data.scheduled_at ? new Date(data.scheduled_at).toISOString() : undefined,
       published_at: data.status === 'published' ? new Date().toISOString() : undefined,
@@ -113,8 +131,13 @@ export function AdminBlogsPage() {
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <Input id="title" label="Post Title" error={errors.title?.message} {...register('title')} />
               <div className="grid sm:grid-cols-2 gap-4">
-                <Input id="category_id" label="Category" placeholder="e.g. SEO, Marketing" {...register('category_id')} />
+                <Input id="category" label="Category" placeholder="e.g. SEO, Marketing" {...register('category')} />
                 <Input id="tags" label="Tags (comma separated)" placeholder="seo, marketing, tips" {...register('tags')} />
+              </div>
+              <div className="grid sm:grid-cols-3 gap-4">
+                <Input id="author" label="Author" placeholder="e.g. Priya Patel" {...register('author')} />
+                <Input id="read_time" label="Read Time (minutes)" type="number" {...register('read_time')} />
+                <Input id="sort_order" label="Display Order" type="number" {...register('sort_order')} />
               </div>
               <div className="grid sm:grid-cols-3 gap-4">
                 <div>
@@ -128,6 +151,10 @@ export function AdminBlogsPage() {
                 {watch('status') === 'scheduled' && (
                   <Input id="scheduled_at" label="Schedule Date" type="datetime-local" {...register('scheduled_at')} />
                 )}
+                <label className="flex items-center gap-2 cursor-pointer pt-6">
+                  <input type="checkbox" {...register('is_featured')} className="rounded border-gray-300" />
+                  <span className="text-sm font-medium text-dark-navy">Featured</span>
+                </label>
               </div>
               <ImageUpload
                 bucket="blog-images"
@@ -145,6 +172,10 @@ export function AdminBlogsPage() {
                   className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-dark-navy focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 font-mono"
                 />
                 {errors.content && <p className="text-xs text-red-500 mt-1">{errors.content.message}</p>}
+              </div>
+              <div className="grid sm:grid-cols-2 gap-4">
+                <Input id="seo_title" label="SEO Title" placeholder="Leave empty to use post title" {...register('seo_title')} />
+                <Input id="seo_description" label="SEO Description" placeholder="Leave empty to use excerpt" {...register('seo_description')} />
               </div>
               <div className="flex items-center gap-4">
                 <Button type="submit">{editingPost ? 'Update Post' : 'Create Post'}</Button>
