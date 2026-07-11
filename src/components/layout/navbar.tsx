@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 import { Menu, X } from 'lucide-react'
 import logo from '@/assets/logo.png'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui'
-import { useAuth } from '@/contexts/AuthContext'
 
 const isHomePath = (path: string) => path === '/' || path.startsWith('/#')
 
@@ -35,7 +34,6 @@ export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [activeSection, setActiveSection] = useState('home')
-  const { user } = useAuth()
   const location = useLocation()
   const isHome = isHomePath(location.pathname)
 
@@ -133,16 +131,6 @@ export function Navbar() {
             <a href="/#contact" onClick={(e) => handleNavClick(e, 'contact')}>
               <Button size="sm" className="text-xs px-3">Contact</Button>
             </a>
-            {user && (
-              <Link to="/admin/dashboard">
-                <Button variant="ghost" size="sm" className="text-xs px-2.5">Admin</Button>
-              </Link>
-            )}
-            {!user && (
-              <Link to="/auth/login">
-                <Button variant="outline" size="sm" className="text-xs px-3">Login</Button>
-              </Link>
-            )}
           </div>
 
           <button
@@ -177,15 +165,6 @@ export function Navbar() {
               <a href="/#contact" onClick={(e) => handleNavClick(e, 'contact')}>
                 <Button className="w-full" size="sm">Contact</Button>
               </a>
-              {user ? (
-                <Link to="/admin/dashboard" onClick={() => setMobileOpen(false)}>
-                  <Button variant="outline" className="w-full" size="sm">Admin</Button>
-                </Link>
-              ) : (
-                <Link to="/auth/login" onClick={() => setMobileOpen(false)}>
-                  <Button variant="outline" className="w-full" size="sm">Login</Button>
-                </Link>
-              )}
             </div>
           </div>
         </div>
