@@ -301,12 +301,117 @@ END $$;
 
 -- 6. profiles had SELECT + "update own row" only — no admin bypass and no DELETE at all,
 -- which silently blocked the admin Clients/Employees pages from editing or removing other users.
+--
+-- IMPORTANT: every "is this user an admin" check in this file (and in 00001_initial_schema.sql)
+-- does EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin'). When that check
+-- runs from WITHIN a policy defined ON profiles itself (as the two policies below do), Postgres
+-- can't resolve the self-reference and throws "infinite recursion detected in policy for relation
+-- profiles" (42P17) — and since every other table's admin policy also queries profiles, that one
+-- broken policy takes the ENTIRE database down, not just the profiles table.
+--
+-- Fix: a SECURITY DEFINER function runs with its owner's privileges (the postgres role, which has
+-- BYPASSRLS), so the SELECT inside it never re-triggers Row Level Security on profiles — breaking
+-- the recursion. Every profiles policy must go through this function; other tables' policies were
+-- never self-referencing and don't need to change, but are updated too for consistency/performance.
+CREATE OR REPLACE FUNCTION public.is_admin()
+RETURNS boolean
+LANGUAGE sql
+SECURITY DEFINER
+SET search_path = public
+STABLE
+AS $$
+  SELECT EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin');
+$$;
+
 DO $$ BEGIN
+  DROP POLICY IF EXISTS "Admins can view all profiles" ON profiles;
+  CREATE POLICY "Admins can view all profiles" ON profiles FOR SELECT
+    USING (is_admin());
+
   DROP POLICY IF EXISTS "Admins can update any profile" ON profiles;
   CREATE POLICY "Admins can update any profile" ON profiles FOR UPDATE
-    USING (EXISTS (SELECT 1 FROM profiles p WHERE p.id = auth.uid() AND p.role = 'admin'));
+    USING (is_admin());
 
   DROP POLICY IF EXISTS "Admins can delete profiles" ON profiles;
   CREATE POLICY "Admins can delete profiles" ON profiles FOR DELETE
-    USING (EXISTS (SELECT 1 FROM profiles p WHERE p.id = auth.uid() AND p.role = 'admin'));
+    USING (is_admin());
+END $$;
+
+-- 7. Re-point every other admin-check policy at is_admin() too (same effective rule, no behavior
+-- change — these were never self-referencing, this just removes the duplicated inline subquery).
+DO $$ BEGIN
+  DROP POLICY IF EXISTS "Admins can manage leads" ON leads;
+  CREATE POLICY "Admins can manage leads" ON leads FOR ALL USING (is_admin());
+
+  DROP POLICY IF EXISTS "Admins manage blog" ON blog_posts;
+  CREATE POLICY "Admins manage blog" ON blog_posts FOR ALL USING (is_admin());
+
+  DROP POLICY IF EXISTS "Admins manage portfolio" ON portfolio_items;
+  CREATE POLICY "Admins manage portfolio" ON portfolio_items FOR ALL USING (is_admin());
+
+  DROP POLICY IF EXISTS "Admins manage testimonials" ON testimonials;
+  CREATE POLICY "Admins manage testimonials" ON testimonials FOR ALL USING (is_admin());
+
+  DROP POLICY IF EXISTS "Admins can view messages" ON contact_messages;
+  CREATE POLICY "Admins can view messages" ON contact_messages FOR ALL USING (is_admin());
+
+  DROP POLICY IF EXISTS "Admins manage requests" ON business_registration_requests;
+  CREATE POLICY "Admins manage requests" ON business_registration_requests FOR ALL USING (is_admin());
+
+  DROP POLICY IF EXISTS "Admins manage referrals" ON referrals;
+  CREATE POLICY "Admins manage referrals" ON referrals FOR ALL USING (is_admin());
+
+  DROP POLICY IF EXISTS "Admins manage faqs" ON faqs;
+  CREATE POLICY "Admins manage faqs" ON faqs FOR ALL USING (is_admin());
+
+  DROP POLICY IF EXISTS "Admins manage projects" ON projects;
+  CREATE POLICY "Admins manage projects" ON projects FOR ALL USING (is_admin());
+
+  DROP POLICY IF EXISTS "Admins manage invoices" ON invoices;
+  CREATE POLICY "Admins manage invoices" ON invoices FOR ALL USING (is_admin());
+
+  DROP POLICY IF EXISTS "Admins manage payments" ON payments;
+  CREATE POLICY "Admins manage payments" ON payments FOR ALL USING (is_admin());
+
+  DROP POLICY IF EXISTS "Admins manage settings" ON website_settings;
+  CREATE POLICY "Admins manage settings" ON website_settings FOR ALL USING (is_admin());
+END $$;
+
+DO $$ BEGIN
+  DROP POLICY IF EXISTS "Admins manage services" ON services;
+  CREATE POLICY "Admins manage services" ON services FOR ALL USING (is_admin());
+
+  DROP POLICY IF EXISTS "Admins manage hero cards" ON hero_cards;
+  CREATE POLICY "Admins manage hero cards" ON hero_cards FOR ALL USING (is_admin());
+
+  DROP POLICY IF EXISTS "Admins manage about content" ON about_content;
+  CREATE POLICY "Admins manage about content" ON about_content FOR ALL USING (is_admin());
+
+  DROP POLICY IF EXISTS "Admins manage growth timeline" ON growth_timeline;
+  CREATE POLICY "Admins manage growth timeline" ON growth_timeline FOR ALL USING (is_admin());
+
+  DROP POLICY IF EXISTS "Admins manage pricing plans" ON pricing_plans;
+  CREATE POLICY "Admins manage pricing plans" ON pricing_plans FOR ALL USING (is_admin());
+
+  DROP POLICY IF EXISTS "Admins manage portfolio categories" ON portfolio_categories;
+  CREATE POLICY "Admins manage portfolio categories" ON portfolio_categories FOR ALL USING (is_admin());
+
+  DROP POLICY IF EXISTS "Admins manage media items" ON media_items;
+  CREATE POLICY "Admins manage media items" ON media_items FOR ALL USING (is_admin());
+
+  DROP POLICY IF EXISTS "Admins manage site content" ON site_content;
+  CREATE POLICY "Admins manage site content" ON site_content FOR ALL USING (is_admin());
+
+  DROP POLICY IF EXISTS "Admins manage social links" ON social_links;
+  CREATE POLICY "Admins manage social links" ON social_links FOR ALL USING (is_admin());
+END $$;
+
+DO $$ BEGIN
+  DROP POLICY IF EXISTS "Admins can manage images" ON storage.objects;
+  CREATE POLICY "Admins can manage images"
+    ON storage.objects FOR ALL
+    USING (
+      bucket_id IN ('logos', 'portfolio', 'gallery', 'blog-images', 'media')
+      AND is_admin()
+    );
 END $$;
