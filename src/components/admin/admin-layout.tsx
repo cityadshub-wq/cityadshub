@@ -144,9 +144,9 @@ export function AdminLayout() {
             <span className="text-dark-navy font-medium">{pageTitle}</span>
           </nav>
           <div className="flex-1" />
-          <Link to="/">
-            <Button variant="ghost" size="sm">View Site</Button>
-          </Link>
+          <Button variant="ghost" size="sm" onClick={() => window.open('/', '_blank', 'noopener,noreferrer')}>
+            View Website
+          </Button>
         </header>
 
         <main className="p-4 lg:p-8">

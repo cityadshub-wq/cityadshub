@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route, Navigate, Outlet } from 'react-router-dom'
 import { Navbar } from '@/components/layout/navbar'
 import { Footer } from '@/components/layout/footer'
 import { ProtectedRoute } from '@/hooks/use-protected-route'
@@ -60,11 +60,20 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
   )
 }
 
-export default function App() {
+function PublicShell() {
   return (
     <>
       <Navbar />
-      <Routes>
+      <Outlet />
+      <Footer />
+    </>
+  )
+}
+
+export default function App() {
+  return (
+    <Routes>
+      <Route element={<PublicShell />}>
         <Route path="/" element={
           <main>
             <HomePage />
@@ -93,46 +102,47 @@ export default function App() {
         <Route path="/terms-conditions" element={<PublicLayout><TermsConditionsPage /></PublicLayout>} />
 
         <Route path="/auth/login" element={<LoginPage />} />
-        <Route path="/admin/login" element={<AdminLoginPage />} />
         <Route path="/auth/register" element={<RegisterPage />} />
         <Route path="/auth/reset-password" element={<ResetPasswordPage />} />
 
         <Route element={<ProtectedRoute allowedRoles={['client']} />}>
           <Route path="/client/dashboard" element={<ClientDashboard />} />
         </Route>
+      </Route>
 
-        <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
-          <Route element={<AdminLayout />}>
-            <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
-            <Route path="/admin/dashboard" element={<AdminDashboard />} />
-            <Route path="/admin/leads" element={<AdminLeadsPage />} />
-            <Route path="/admin/business-registration" element={<AdminBusinessRegistrationPage />} />
-            <Route path="/admin/portfolio" element={<AdminPortfolioPage />} />
-            <Route path="/admin/blogs" element={<AdminBlogsPage />} />
-            <Route path="/admin/testimonials" element={<AdminTestimonialsPage />} />
-            <Route path="/admin/messages" element={<AdminMessagesPage />} />
-            <Route path="/admin/referrals" element={<AdminReferralsPage />} />
-            <Route path="/admin/analytics" element={<AdminAnalyticsPage />} />
-            <Route path="/admin/clients" element={<AdminClientsPage />} />
-            <Route path="/admin/employees" element={<AdminEmployeesPage />} />
-            <Route path="/admin/services" element={<AdminServicesPage />} />
-            <Route path="/admin/projects" element={<AdminProjectsPage />} />
-            <Route path="/admin/invoices" element={<AdminInvoicesPage />} />
-            <Route path="/admin/payments" element={<AdminPaymentsPage />} />
-            <Route path="/admin/hero-cards" element={<AdminHeroCardsPage />} />
-            <Route path="/admin/site-content" element={<AdminSiteContentPage />} />
-            <Route path="/admin/about" element={<AdminAboutPage />} />
-            <Route path="/admin/our-work" element={<AdminOurWorkPage />} />
-            <Route path="/admin/pricing" element={<AdminPricingPage />} />
-            <Route path="/admin/portfolio-categories" element={<AdminPortfolioCategoriesPage />} />
-            <Route path="/admin/faqs" element={<AdminFAQsPage />} />
-            <Route path="/admin/media" element={<AdminMediaPage />} />
-            <Route path="/admin/social-links" element={<AdminSocialLinksPage />} />
-            <Route path="/admin/settings" element={<AdminSettingsPage />} />
-          </Route>
+      {/* Admin has its own login and layout — no public navbar/footer anywhere below */}
+      <Route path="/admin/login" element={<AdminLoginPage />} />
+
+      <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
+        <Route element={<AdminLayout />}>
+          <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/admin/leads" element={<AdminLeadsPage />} />
+          <Route path="/admin/business-registration" element={<AdminBusinessRegistrationPage />} />
+          <Route path="/admin/portfolio" element={<AdminPortfolioPage />} />
+          <Route path="/admin/blogs" element={<AdminBlogsPage />} />
+          <Route path="/admin/testimonials" element={<AdminTestimonialsPage />} />
+          <Route path="/admin/messages" element={<AdminMessagesPage />} />
+          <Route path="/admin/referrals" element={<AdminReferralsPage />} />
+          <Route path="/admin/analytics" element={<AdminAnalyticsPage />} />
+          <Route path="/admin/clients" element={<AdminClientsPage />} />
+          <Route path="/admin/employees" element={<AdminEmployeesPage />} />
+          <Route path="/admin/services" element={<AdminServicesPage />} />
+          <Route path="/admin/projects" element={<AdminProjectsPage />} />
+          <Route path="/admin/invoices" element={<AdminInvoicesPage />} />
+          <Route path="/admin/payments" element={<AdminPaymentsPage />} />
+          <Route path="/admin/hero-cards" element={<AdminHeroCardsPage />} />
+          <Route path="/admin/site-content" element={<AdminSiteContentPage />} />
+          <Route path="/admin/about" element={<AdminAboutPage />} />
+          <Route path="/admin/our-work" element={<AdminOurWorkPage />} />
+          <Route path="/admin/pricing" element={<AdminPricingPage />} />
+          <Route path="/admin/portfolio-categories" element={<AdminPortfolioCategoriesPage />} />
+          <Route path="/admin/faqs" element={<AdminFAQsPage />} />
+          <Route path="/admin/media" element={<AdminMediaPage />} />
+          <Route path="/admin/social-links" element={<AdminSocialLinksPage />} />
+          <Route path="/admin/settings" element={<AdminSettingsPage />} />
         </Route>
-      </Routes>
-      <Footer />
-    </>
+      </Route>
+    </Routes>
   )
 }
