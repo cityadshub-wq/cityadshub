@@ -1,0 +1,312 @@
+-- CITY ADS HUB - Complete Database Migration
+-- Run this in your Supabase SQL Editor
+
+-- 1. Create tables for new content types
+
+CREATE TABLE IF NOT EXISTS about_content (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  section TEXT NOT NULL UNIQUE,
+  title TEXT,
+  subtitle TEXT,
+  description TEXT,
+  content TEXT,
+  image_url TEXT,
+  images TEXT[] DEFAULT '{}',
+  icon TEXT,
+  sort_order INT DEFAULT 0,
+  is_active BOOLEAN DEFAULT true,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS growth_timeline (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  year TEXT NOT NULL,
+  title TEXT NOT NULL,
+  description TEXT,
+  icon TEXT,
+  image_url TEXT,
+  sort_order INT DEFAULT 0,
+  is_active BOOLEAN DEFAULT true,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS pricing_plans (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  name TEXT NOT NULL,
+  slug TEXT,
+  price DECIMAL(10,2),
+  original_price DECIMAL(10,2),
+  currency TEXT DEFAULT 'INR',
+  interval TEXT DEFAULT 'month',
+  description TEXT,
+  features TEXT[] DEFAULT '{}',
+  is_popular BOOLEAN DEFAULT false,
+  button_text TEXT DEFAULT 'Get Started',
+  button_link TEXT,
+  sort_order INT DEFAULT 0,
+  is_active BOOLEAN DEFAULT true,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS portfolio_categories (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  name TEXT NOT NULL,
+  slug TEXT,
+  sort_order INT DEFAULT 0,
+  is_active BOOLEAN DEFAULT true,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS media_items (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  name TEXT NOT NULL,
+  url TEXT NOT NULL,
+  type TEXT NOT NULL DEFAULT 'image',
+  mime_type TEXT,
+  size INT DEFAULT 0,
+  alt_text TEXT,
+  folder TEXT DEFAULT 'general',
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS site_content (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  page TEXT NOT NULL DEFAULT 'home',
+  section TEXT NOT NULL,
+  key TEXT NOT NULL,
+  value TEXT,
+  type TEXT DEFAULT 'text',
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now(),
+  UNIQUE(page, section, key)
+);
+
+CREATE TABLE IF NOT EXISTS social_links (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  platform TEXT NOT NULL UNIQUE,
+  url TEXT NOT NULL,
+  icon TEXT,
+  sort_order INT DEFAULT 0,
+  is_active BOOLEAN DEFAULT true,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- 2. Add missing columns to existing tables
+
+ALTER TABLE services ADD COLUMN IF NOT EXISTS image_url TEXT;
+ALTER TABLE services ADD COLUMN IF NOT EXISTS icon_url TEXT;
+ALTER TABLE services ADD COLUMN IF NOT EXISTS button_text TEXT DEFAULT 'Learn More';
+ALTER TABLE services ADD COLUMN IF NOT EXISTS button_link TEXT;
+ALTER TABLE services ADD COLUMN IF NOT EXISTS sort_order INT DEFAULT 0;
+ALTER TABLE services ADD COLUMN IF NOT EXISTS is_featured BOOLEAN DEFAULT false;
+ALTER TABLE services ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT now();
+
+ALTER TABLE portfolio_items ADD COLUMN IF NOT EXISTS full_description TEXT;
+ALTER TABLE portfolio_items ADD COLUMN IF NOT EXISTS technology TEXT[] DEFAULT '{}';
+ALTER TABLE portfolio_items ADD COLUMN IF NOT EXISTS project_url TEXT;
+ALTER TABLE portfolio_items ADD COLUMN IF NOT EXISTS sort_order INT DEFAULT 0;
+ALTER TABLE portfolio_items ADD COLUMN IF NOT EXISTS seo_title TEXT;
+ALTER TABLE portfolio_items ADD COLUMN IF NOT EXISTS seo_description TEXT;
+ALTER TABLE portfolio_items ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT now();
+
+ALTER TABLE testimonials ADD COLUMN IF NOT EXISTS video_url TEXT;
+ALTER TABLE testimonials ADD COLUMN IF NOT EXISTS sort_order INT DEFAULT 0;
+ALTER TABLE testimonials ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT now();
+
+ALTER TABLE blog_posts ADD COLUMN IF NOT EXISTS read_time INT DEFAULT 5;
+ALTER TABLE blog_posts ADD COLUMN IF NOT EXISTS seo_title TEXT;
+ALTER TABLE blog_posts ADD COLUMN IF NOT EXISTS seo_description TEXT;
+
+ALTER TABLE website_settings ADD COLUMN IF NOT EXISTS analytics_code TEXT;
+ALTER TABLE website_settings ADD COLUMN IF NOT EXISTS whatsapp_number TEXT;
+ALTER TABLE website_settings ADD COLUMN IF NOT EXISTS footer_text TEXT;
+ALTER TABLE website_settings ADD COLUMN IF NOT EXISTS footer_description TEXT;
+ALTER TABLE website_settings ADD COLUMN IF NOT EXISTS copyright_text TEXT;
+ALTER TABLE website_settings ADD COLUMN IF NOT EXISTS success_message TEXT DEFAULT 'Thank you! We will get back to you within 24 hours.';
+ALTER TABLE website_settings ADD COLUMN IF NOT EXISTS form_title TEXT DEFAULT 'Send us a Message';
+
+-- 3. Insert default data
+
+INSERT INTO site_content (page, section, key, value, type)
+VALUES
+  ('home', 'hero', 'badge', 'Trusted Influencer Marketing Agency', 'text'),
+  ('home', 'hero', 'title', 'Turning Local Reach Into Real Customers', 'text'),
+  ('home', 'hero', 'subtitle', 'We help businesses grow with data-driven marketing strategies, cutting-edge technology, and creative excellence.', 'text'),
+  ('home', 'hero', 'button_1_text', 'Explore Services', 'text'),
+  ('home', 'hero', 'button_1_link', '/#services', 'text'),
+  ('home', 'hero', 'button_2_text', 'Get a Free Quote', 'text'),
+  ('home', 'hero', 'button_2_link', '/#contact', 'text')
+ON CONFLICT (page, section, key) DO NOTHING;
+
+INSERT INTO site_content (page, section, key, value, type)
+VALUES
+  ('home', 'stats', 'stat_1_value', '150+', 'text'),
+  ('home', 'stats', 'stat_1_label', 'Projects Completed', 'text'),
+  ('home', 'stats', 'stat_2_value', '98%', 'text'),
+  ('home', 'stats', 'stat_2_label', 'Client Satisfaction', 'text'),
+  ('home', 'stats', 'stat_3_value', '50+', 'text'),
+  ('home', 'stats', 'stat_3_label', 'Team Members', 'text'),
+  ('home', 'stats', 'stat_4_value', '5+', 'text'),
+  ('home', 'stats', 'stat_4_label', 'Years Experience', 'text')
+ON CONFLICT (page, section, key) DO NOTHING;
+
+INSERT INTO about_content (section, title, subtitle, description, sort_order)
+VALUES
+  ('intro', 'About Us', 'We''re on a Mission to Transform Local Businesses', 'Founded in 2020, City Ads Hub has grown from a small team of passionate marketers to a full-service digital agency helping businesses across India achieve remarkable growth.', 1),
+  ('mission', 'Our Mission', 'To empower local businesses', 'To empower local businesses with cutting-edge digital strategies that drive measurable growth.', 2),
+  ('vision', 'Our Vision', 'To be India''s most trusted partner', 'To be India''s most trusted digital growth partner for businesses of all sizes.', 3),
+  ('values', 'Our Values', 'Integrity & Excellence', 'Integrity, transparency, innovation, and client success are at the core of everything we do.', 4),
+  ('story', 'Our Story', 'How We Started', 'City Ads Hub was born from a simple observation: local businesses were struggling to compete in the digital age. We started as a small Meta Ads agency in Mumbai, helping local restaurants and shops reach customers online.', 5)
+ON CONFLICT (section) DO NOTHING;
+
+INSERT INTO growth_timeline (year, title, description, sort_order)
+VALUES
+  ('2020', 'Founded in Mumbai', 'Started as a small Meta Ads agency helping local businesses.', 1),
+  ('2021', 'Expanded Services', 'Added Google Ads, SEO, and web development to our offerings.', 2),
+  ('2022', 'Team of 25+', 'Grew to 25+ professionals across marketing, design, and tech.', 3),
+  ('2023', '100+ Clients', 'Reached 100+ satisfied clients across India.', 4),
+  ('2024', 'Full-Service Agency', '50+ team members serving 150+ clients with end-to-end solutions.', 5)
+ON CONFLICT DO NOTHING;
+
+INSERT INTO pricing_plans (name, slug, price, description, features, is_popular, sort_order)
+VALUES
+  ('Starter', 'starter', 9999, 'Perfect for small businesses starting their digital journey.', ARRAY['Social Media Management (2 platforms)', 'Basic SEO Audit', 'Monthly Performance Report', 'Email Support', '1 Social Post per Week'], false, 1),
+  ('Business', 'business', 24999, 'Ideal for growing businesses ready to scale to the next level.', ARRAY['Social Media Management (4 platforms)', 'Google Ads Management', 'Advanced SEO', 'Content Creation (8 posts/month)', 'Website Optimization', 'Priority Support'], true, 2),
+  ('Enterprise', 'enterprise', 49999, 'Complete solution for established businesses with premium needs.', ARRAY['Full Digital Marketing Suite', 'All Ad Platforms Management', 'Premium SEO + Local SEO', 'Video Production (2 videos/month)', 'Website Development', 'Dedicated Account Manager', '24/7 Priority Support'], false, 3)
+ON CONFLICT DO NOTHING;
+
+INSERT INTO portfolio_categories (name, slug, sort_order)
+VALUES
+  ('All', 'all', 0),
+  ('Websites', 'websites', 1),
+  ('Marketing', 'marketing', 2),
+  ('Branding', 'branding', 3),
+  ('SEO', 'seo', 4)
+ON CONFLICT DO NOTHING;
+
+INSERT INTO social_links (platform, url, icon, sort_order)
+VALUES
+  ('facebook', '#', 'Facebook', 1),
+  ('instagram', '#', 'Instagram', 2),
+  ('youtube', '#', 'Youtube', 3),
+  ('linkedin', '#', 'Linkedin', 4)
+ON CONFLICT (platform) DO NOTHING;
+
+-- 4. Storage bucket used by the admin Media Library and image pickers
+-- (ImageUpload bucket="media" and the Media Library page upload directly to this bucket)
+INSERT INTO storage.buckets (id, name, public) VALUES
+  ('media', 'media', true)
+ON CONFLICT (id) DO NOTHING;
+
+DO $$ BEGIN
+  DROP POLICY IF EXISTS "Public can view images" ON storage.objects;
+  CREATE POLICY "Public can view images"
+    ON storage.objects FOR SELECT
+    USING (bucket_id IN ('logos', 'portfolio', 'gallery', 'blog-images', 'media'));
+END $$;
+
+DO $$ BEGIN
+  DROP POLICY IF EXISTS "Admins can manage images" ON storage.objects;
+  CREATE POLICY "Admins can manage images"
+    ON storage.objects FOR ALL
+    USING (
+      bucket_id IN ('logos', 'portfolio', 'gallery', 'blog-images', 'media')
+      AND EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
+    );
+END $$;
+
+-- 5. Row Level Security for tables introduced/left ungated so far
+-- (services and hero_cards had no RLS at all; the new CMS tables below never had it enabled)
+ALTER TABLE services ENABLE ROW LEVEL SECURITY;
+ALTER TABLE hero_cards ENABLE ROW LEVEL SECURITY;
+ALTER TABLE about_content ENABLE ROW LEVEL SECURITY;
+ALTER TABLE growth_timeline ENABLE ROW LEVEL SECURITY;
+ALTER TABLE pricing_plans ENABLE ROW LEVEL SECURITY;
+ALTER TABLE portfolio_categories ENABLE ROW LEVEL SECURITY;
+ALTER TABLE media_items ENABLE ROW LEVEL SECURITY;
+ALTER TABLE site_content ENABLE ROW LEVEL SECURITY;
+ALTER TABLE social_links ENABLE ROW LEVEL SECURITY;
+
+DO $$ BEGIN
+  DROP POLICY IF EXISTS "Public can read services" ON services;
+  CREATE POLICY "Public can read services" ON services FOR SELECT USING (true);
+  DROP POLICY IF EXISTS "Admins manage services" ON services;
+  CREATE POLICY "Admins manage services" ON services FOR ALL
+    USING (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin'));
+END $$;
+
+DO $$ BEGIN
+  DROP POLICY IF EXISTS "Public can read hero cards" ON hero_cards;
+  CREATE POLICY "Public can read hero cards" ON hero_cards FOR SELECT USING (is_active = true);
+  DROP POLICY IF EXISTS "Admins manage hero cards" ON hero_cards;
+  CREATE POLICY "Admins manage hero cards" ON hero_cards FOR ALL
+    USING (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin'));
+END $$;
+
+DO $$ BEGIN
+  DROP POLICY IF EXISTS "Public can read about content" ON about_content;
+  CREATE POLICY "Public can read about content" ON about_content FOR SELECT USING (is_active = true);
+  DROP POLICY IF EXISTS "Admins manage about content" ON about_content;
+  CREATE POLICY "Admins manage about content" ON about_content FOR ALL
+    USING (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin'));
+END $$;
+
+DO $$ BEGIN
+  DROP POLICY IF EXISTS "Public can read growth timeline" ON growth_timeline;
+  CREATE POLICY "Public can read growth timeline" ON growth_timeline FOR SELECT USING (is_active = true);
+  DROP POLICY IF EXISTS "Admins manage growth timeline" ON growth_timeline;
+  CREATE POLICY "Admins manage growth timeline" ON growth_timeline FOR ALL
+    USING (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin'));
+END $$;
+
+DO $$ BEGIN
+  DROP POLICY IF EXISTS "Public can read pricing plans" ON pricing_plans;
+  CREATE POLICY "Public can read pricing plans" ON pricing_plans FOR SELECT USING (is_active = true);
+  DROP POLICY IF EXISTS "Admins manage pricing plans" ON pricing_plans;
+  CREATE POLICY "Admins manage pricing plans" ON pricing_plans FOR ALL
+    USING (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin'));
+END $$;
+
+DO $$ BEGIN
+  DROP POLICY IF EXISTS "Public can read portfolio categories" ON portfolio_categories;
+  CREATE POLICY "Public can read portfolio categories" ON portfolio_categories FOR SELECT USING (is_active = true);
+  DROP POLICY IF EXISTS "Admins manage portfolio categories" ON portfolio_categories;
+  CREATE POLICY "Admins manage portfolio categories" ON portfolio_categories FOR ALL
+    USING (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin'));
+END $$;
+
+DO $$ BEGIN
+  DROP POLICY IF EXISTS "Admins manage media items" ON media_items;
+  CREATE POLICY "Admins manage media items" ON media_items FOR ALL
+    USING (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin'));
+END $$;
+
+DO $$ BEGIN
+  DROP POLICY IF EXISTS "Public can read site content" ON site_content;
+  CREATE POLICY "Public can read site content" ON site_content FOR SELECT USING (true);
+  DROP POLICY IF EXISTS "Admins manage site content" ON site_content;
+  CREATE POLICY "Admins manage site content" ON site_content FOR ALL
+    USING (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin'));
+END $$;
+
+DO $$ BEGIN
+  DROP POLICY IF EXISTS "Public can read social links" ON social_links;
+  CREATE POLICY "Public can read social links" ON social_links FOR SELECT USING (is_active = true);
+  DROP POLICY IF EXISTS "Admins manage social links" ON social_links;
+  CREATE POLICY "Admins manage social links" ON social_links FOR ALL
+    USING (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin'));
+END $$;
+
+-- 6. profiles had SELECT + "update own row" only — no admin bypass and no DELETE at all,
+-- which silently blocked the admin Clients/Employees pages from editing or removing other users.
+DO $$ BEGIN
+  DROP POLICY IF EXISTS "Admins can update any profile" ON profiles;
+  CREATE POLICY "Admins can update any profile" ON profiles FOR UPDATE
+    USING (EXISTS (SELECT 1 FROM profiles p WHERE p.id = auth.uid() AND p.role = 'admin'));
+
+  DROP POLICY IF EXISTS "Admins can delete profiles" ON profiles;
+  CREATE POLICY "Admins can delete profiles" ON profiles FOR DELETE
+    USING (EXISTS (SELECT 1 FROM profiles p WHERE p.id = auth.uid() AND p.role = 'admin'));
+END $$;
