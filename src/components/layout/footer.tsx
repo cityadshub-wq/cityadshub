@@ -1,5 +1,22 @@
 import { useState } from 'react'
-import { Phone, Mail, MapPin, Globe, Send, ChevronUp } from 'lucide-react'
+import { Phone, Mail, MapPin, Send, ChevronUp } from 'lucide-react'
+import { useSettings } from '@/hooks/use-settings'
+import { useRealtimeQuery } from '@/hooks/use-realtime-query'
+import { getSocialLinks } from '@/services/social-links'
+import { getLucideIcon } from '@/lib/icon-map'
+
+const fallbackContactInfo = {
+  contact_phone: '+91 98765 43210',
+  contact_email: 'hello@cityadshub.com',
+  address: 'Mumbai, Maharashtra, India',
+}
+
+const fallbackSocialLinks = [
+  { id: 'facebook', platform: 'facebook', url: '#', icon: 'Globe' },
+  { id: 'instagram', platform: 'instagram', url: '#', icon: 'Globe' },
+  { id: 'youtube', platform: 'youtube', url: '#', icon: 'Globe' },
+  { id: 'linkedin', platform: 'linkedin', url: '#', icon: 'Globe' },
+]
 
 const footerLinks = {
   services: [
@@ -28,6 +45,14 @@ const footerLinks = {
 export function Footer() {
   const [email, setEmail] = useState('')
   const [subscribed, setSubscribed] = useState(false)
+  const { data: settings } = useSettings()
+  const { data: socialLinks } = useRealtimeQuery('social_links', ['social_links'], getSocialLinks)
+
+  const activeSocialLinks = (socialLinks?.filter((l) => l.is_active) || [])
+  const displaySocialLinks = activeSocialLinks.length > 0 ? activeSocialLinks : fallbackSocialLinks
+  const phone = settings?.contact_phone || fallbackContactInfo.contact_phone
+  const contactEmail = settings?.contact_email || fallbackContactInfo.contact_email
+  const address = settings?.address || fallbackContactInfo.address
 
   const handleSubscribe = (e: React.FormEvent) => {
     e.preventDefault()
@@ -63,14 +88,17 @@ export function Footer() {
               </span>
             </a>
             <p className="text-gray-400 text-sm leading-relaxed mb-6 max-w-sm">
-              Turning local reach into real customers. We help businesses grow with data-driven digital marketing strategies.
+              {settings?.footer_description || 'Turning local reach into real customers. We help businesses grow with data-driven digital marketing strategies.'}
             </p>
             <div className="flex items-center gap-3">
-              {['facebook', 'instagram', 'youtube', 'linkedin'].map((social) => (
-                <a key={social} href="#" className="h-9 w-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-primary transition-colors">
-                  <Globe className="h-4 w-4" />
-                </a>
-              ))}
+              {displaySocialLinks.map((social) => {
+                const Icon = getLucideIcon(social.icon)
+                return (
+                  <a key={social.id} href={social.url} target="_blank" rel="noopener noreferrer" className="h-9 w-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-primary transition-colors">
+                    <Icon className="h-4 w-4" />
+                  </a>
+                )
+              })}
             </div>
           </div>
 
@@ -145,20 +173,20 @@ export function Footer() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
             <div className="flex items-center gap-3 text-sm text-gray-400">
               <Phone className="h-4 w-4 text-primary flex-shrink-0" />
-              <span>+91 98765 43210</span>
+              <span>{phone}</span>
             </div>
             <div className="flex items-center gap-3 text-sm text-gray-400">
               <Mail className="h-4 w-4 text-primary flex-shrink-0" />
-              <span>hello@cityadshub.com</span>
+              <span>{contactEmail}</span>
             </div>
             <div className="flex items-center gap-3 text-sm text-gray-400">
               <MapPin className="h-4 w-4 text-primary flex-shrink-0" />
-              <span>Mumbai, Maharashtra, India</span>
+              <span>{address}</span>
             </div>
           </div>
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-sm text-gray-500">
-              &copy; {new Date().getFullYear()} City Ads Hub. All rights reserved.
+              {settings?.copyright_text || `© ${new Date().getFullYear()} City Ads Hub. All rights reserved.`}
             </p>
             <div className="flex items-center gap-4 text-sm text-gray-500">
               <a href="/privacy-policy" className="hover:text-primary transition-colors">Privacy Policy</a>

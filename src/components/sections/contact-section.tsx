@@ -1,9 +1,12 @@
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Phone, Mail, MapPin, Clock, Send, ArrowUpRight } from 'lucide-react'
+import { Phone, Mail, MapPin, Clock, Send, ArrowUpRight, CheckCircle2 } from 'lucide-react'
 import { Button, Input, Textarea, Card } from '@/components/ui'
+import { useSettings } from '@/hooks/use-settings'
+import { createContactMessage } from '@/services/contact'
 
 const contactSchema = z.object({
   name: z.string().min(2, 'Name is required'),
@@ -16,12 +19,12 @@ const contactSchema = z.object({
 
 type ContactForm = z.infer<typeof contactSchema>
 
-const contactInfo = [
-  { icon: MapPin, label: 'Address', value: 'Mumbai, Maharashtra, India' },
-  { icon: Phone, label: 'Phone', value: '+91 98765 43210' },
-  { icon: Mail, label: 'Email', value: 'hello@cityadshub.com' },
-  { icon: Clock, label: 'Working Hours', value: 'Mon-Sat: 10:00 AM - 7:00 PM' },
-]
+const fallbackContactInfo = {
+  address: 'Mumbai, Maharashtra, India',
+  contact_phone: '+91 98765 43210',
+  contact_email: 'hello@cityadshub.com',
+  business_hours: 'Mon-Sat: 10:00 AM - 7:00 PM',
+}
 
 const services = ['Meta Ads', 'Google Ads', 'SEO', 'Web Development', 'Social Media Marketing', 'Branding', 'Graphic Design', 'Video Production', 'Business Registration', 'Other']
 
@@ -33,13 +36,32 @@ const fadeUp = {
 }
 
 export function ContactSection() {
-  const { register, handleSubmit, formState: { errors }, reset } = useForm<ContactForm>({
+  const { register, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm<ContactForm>({
     resolver: zodResolver(contactSchema),
   })
+  const { data: settings } = useSettings()
+  const [submitError, setSubmitError] = useState<string | null>(null)
+  const [submitted, setSubmitted] = useState(false)
 
-  const onSubmit = (data: ContactForm) => {
-    console.log('Contact form:', data)
-    reset()
+  const contactInfo = [
+    { icon: MapPin, label: 'Address', value: settings?.address || fallbackContactInfo.address },
+    { icon: Phone, label: 'Phone', value: settings?.contact_phone || fallbackContactInfo.contact_phone },
+    { icon: Mail, label: 'Email', value: settings?.contact_email || fallbackContactInfo.contact_email },
+    { icon: Clock, label: 'Working Hours', value: settings?.business_hours || fallbackContactInfo.business_hours },
+  ]
+
+  const onSubmit = async (data: ContactForm) => {
+    setSubmitError(null)
+    try {
+      const subject = data.service ? `Inquiry: ${data.service}` : 'Contact Form Submission'
+      const message = data.company ? `Company: ${data.company}\n\n${data.message}` : data.message
+      await createContactMessage({ name: data.name, email: data.email, phone: data.phone, subject, message })
+      setSubmitted(true)
+      reset()
+    } catch (e) {
+      console.error(e)
+      setSubmitError('Something went wrong sending your message. Please try again.')
+    }
   }
 
   return (
@@ -95,6 +117,7 @@ export function ContactSection() {
             className="lg:col-span-3"
           >
             <Card className="p-6 md:p-8">
+              <h3 className="text-lg font-semibold text-dark-navy mb-5">{settings?.form_title || 'Send us a Message'}</h3>
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
                 <div className="grid sm:grid-cols-2 gap-4">
                   <Input id="name" label="Full Name" placeholder="Your name" error={errors.name?.message} {...register('name')} />
@@ -117,7 +140,13 @@ export function ContactSection() {
                   </select>
                 </div>
                 <Textarea id="message" label="Message" placeholder="Tell us about your project..." error={errors.message?.message} {...register('message')} />
-                <Button type="submit" size="lg" className="w-full sm:w-auto">
+                {submitted && (
+                  <p className="flex items-center gap-2 text-sm font-medium text-green">
+                    <CheckCircle2 className="h-4 w-4" /> {settings?.success_message || 'Thank you! We will get back to you within 24 hours.'}
+                  </p>
+                )}
+                {submitError && <p className="text-sm font-medium text-red-500">{submitError}</p>}
+                <Button type="submit" size="lg" className="w-full sm:w-auto" loading={isSubmitting}>
                   <Send className="mr-2 h-4 w-4" />
                   Send Message
                   <ArrowUpRight className="ml-1 h-4 w-4" />
