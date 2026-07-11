@@ -140,6 +140,15 @@ VALUES
   ('home', 'hero', 'button_2_link', '/#contact', 'text')
 ON CONFLICT (page, section, key) DO NOTHING;
 
+-- Force-update the hero title/subtitle copy to the new influencer-marketing messaging.
+-- (Plain INSERT ... ON CONFLICT DO NOTHING above only seeds these on a fresh database —
+-- it never touches a row that already exists, so an explicit UPDATE is needed to roll
+-- this content change out to a database that was seeded before this change.)
+UPDATE site_content SET value = 'Build Powerful<br /><span class="text-primary">Influencer</span><br />Campaigns That<br />Drive <span class="text-orange">Real Growth</span>', updated_at = now()
+  WHERE page = 'home' AND section = 'hero' AND key = 'title';
+UPDATE site_content SET value = 'We connect your brand with trusted creators to increase awareness, build customer trust, and generate measurable business growth through strategic influencer marketing campaigns.', updated_at = now()
+  WHERE page = 'home' AND section = 'hero' AND key = 'subtitle';
+
 INSERT INTO site_content (page, section, key, value, type)
 VALUES
   ('home', 'stats', 'stat_1_value', '150+', 'text'),

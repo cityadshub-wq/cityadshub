@@ -22,9 +22,12 @@ export function HomePage() {
   const { data: heroCards = [], isLoading: cardsLoading } = useRealtimeQuery('hero_cards', ['hero_cards'], () => getHeroCards(true))
   const { data: content = [], isLoading: contentLoading } = useRealtimeQuery('site_content', ['site_content', 'home'], () => getSiteContent('home'))
 
+  const defaultHeroTitle = 'Build Powerful<br /><span class="text-primary">Influencer</span><br />Campaigns That<br />Drive <span class="text-orange">Real Growth</span>'
+  const defaultHeroSubtitle = 'We connect your brand with trusted creators to increase awareness, build customer trust, and generate measurable business growth through strategic influencer marketing campaigns.'
+
   const badge = contentLoading ? 'Trusted Influencer Marketing Agency' : getContent(content, 'badge', 'Trusted Influencer Marketing Agency')
-  const heroTitle = contentLoading ? 'Turning <span class="text-primary">Local Reach</span><br />Into <span class="text-orange">Real Customers</span>' : getContent(content, 'title', 'Turning Local Reach Into Real Customers')
-  const heroSubtitle = contentLoading ? 'We help businesses grow with data-driven marketing strategies, cutting-edge technology, and creative excellence.' : getContent(content, 'subtitle', 'We help businesses grow with data-driven marketing strategies, cutting-edge technology, and creative excellence.')
+  const heroTitle = contentLoading ? defaultHeroTitle : getContent(content, 'title', defaultHeroTitle)
+  const heroSubtitle = contentLoading ? defaultHeroSubtitle : getContent(content, 'subtitle', defaultHeroSubtitle)
   const btn1Text = getContent(content, 'button_1_text', 'Explore Services')
   const btn1Link = getContent(content, 'button_1_link', '/#services')
   const btn2Text = getContent(content, 'button_2_text', 'Get a Free Quote')
@@ -36,9 +39,6 @@ export function HomePage() {
     { value: getContent(content, 'stat_3_value', '50+'), label: getContent(content, 'stat_3_label', 'Team Members') },
     { value: getContent(content, 'stat_4_value', '5+'), label: getContent(content, 'stat_4_label', 'Years Experience') },
   ]
-
-  const titleParts = heroTitle.split('<span')
-  const titleHtml = titleParts.length > 1 ? heroTitle : `<span class="text-primary">Local Reach</span><br />Into <span class="text-orange">Real Customers</span>`
 
   return (
     <>
@@ -60,7 +60,7 @@ export function HomePage() {
                 <BarChart3 className="h-4 w-4" />
                 {badge}
               </div>
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-dark-navy leading-tight mb-6" dangerouslySetInnerHTML={{ __html: titleHtml }} />
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-dark-navy leading-tight mb-6" dangerouslySetInnerHTML={{ __html: heroTitle }} />
               <p className="text-lg text-gray-600 mb-8 max-w-lg">
                 {heroSubtitle}
               </p>
