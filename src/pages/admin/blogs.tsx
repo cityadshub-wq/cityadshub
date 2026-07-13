@@ -25,8 +25,9 @@ const schema = z.object({
   is_featured: z.boolean().optional(),
   status: z.enum(['draft', 'published', 'scheduled']),
   scheduled_at: z.string().optional(),
+  featured_image: z.string().nullable().optional(),
 })
-type FormData = z.infer<typeof schema> & { featured_image?: string | null }
+type FormData = z.infer<typeof schema>
 
 export function AdminBlogsPage() {
   const [posts, setPosts] = useState<BlogPost[]>([])
