@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useLocation, Outlet } from 'react-router-dom'
-import { LayoutDashboard, Users, Briefcase, FileText, Star, MessageSquare, Gift, BarChart3, LogOut, Menu, X, Settings, UserCog, FolderOpen, DollarSign, CreditCard, Globe, ChevronRight, Home, Layout, Image, HelpCircle, Tags, Target, ShoppingBag, Palette, Share2, BookOpen, TrendingUp } from 'lucide-react'
+import { LayoutDashboard, Users, Briefcase, FileText, Star, MessageSquare, Gift, BarChart3, LogOut, Menu, X, Settings, UserCog, FolderOpen, DollarSign, CreditCard, Globe, ChevronRight, Home, Layout, Image, HelpCircle, Tags, Target, ShoppingBag, Palette, Share2, BookOpen, TrendingUp, ShieldCheck } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAuth } from '@/contexts/AuthContext'
 import { Button } from '@/components/ui'
@@ -38,6 +38,7 @@ const sidebarLinks = [
   { path: '/admin/payments', label: 'Payments', icon: CreditCard },
   { separator: 'System' },
   { path: '/admin/settings', label: 'Website Settings', icon: Settings },
+  { path: '/admin/admin-users', label: 'Admin Users', icon: ShieldCheck },
 ]
 
 const pageTitles: Record<string, string> = {
@@ -67,6 +68,7 @@ const pageTitles: Record<string, string> = {
   '/admin/invoices': 'Invoices',
   '/admin/payments': 'Payments',
   '/admin/settings': 'Website Settings',
+  '/admin/admin-users': 'Admin Users',
 }
 
 export function AdminLayout() {

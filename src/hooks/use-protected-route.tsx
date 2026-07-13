@@ -18,5 +18,9 @@ export function ProtectedRoute({ allowedRoles }: { allowedRoles?: string[] }) {
     return <Navigate to="/" replace />
   }
 
+  if (profile && profile.is_active === false) {
+    return <Navigate to={allowedRoles?.includes('admin') ? '/admin/login' : '/'} replace />
+  }
+
   return <Outlet />
 }

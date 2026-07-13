@@ -48,10 +48,16 @@ export function AdminLoginPage() {
       return
     }
 
-    const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
+    const { data: profile } = await supabase.from('profiles').select('role, is_active').eq('id', user.id).single()
     if (!profile || profile.role !== 'admin') {
       await supabase.auth.signOut()
       setError('This account does not have admin access.')
+      setLoading(false)
+      return
+    }
+    if (profile.is_active === false) {
+      await supabase.auth.signOut()
+      setError('This admin account has been deactivated. Contact another administrator.')
       setLoading(false)
       return
     }

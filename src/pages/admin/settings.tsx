@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Save, Palette, Globe, Phone, Lock, CheckCircle2, AlertCircle, FileText, Code } from 'lucide-react'
+import { Save, Palette, Globe, Phone, Lock, CheckCircle2, AlertCircle, FileText, Code, User } from 'lucide-react'
 import { Button, Card, Input, Textarea, ImageUpload } from '@/components/ui'
 import { SEO } from '@/components/shared/seo'
 import { useForm } from 'react-hook-form'
@@ -8,6 +8,13 @@ import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { getSettings, upsertSettings } from '@/services/settings'
 import { supabase } from '@/lib/supabase'
+import { useAuth } from '@/contexts/AuthContext'
+
+const profileSchema = z.object({
+  full_name: z.string().min(1, 'Name is required'),
+  email: z.string().email('Invalid email'),
+})
+type ProfileForm = z.infer<typeof profileSchema>
 
 const schema = z.object({
   site_name: z.string().min(1),
@@ -43,6 +50,7 @@ const passwordSchema = z.object({
 type PasswordForm = z.infer<typeof passwordSchema>
 
 export function AdminSettingsPage() {
+  const { user, profile, refreshProfile } = useAuth()
   const [saved, setSaved] = useState(false)
   const [saveError, setSaveError] = useState('')
   const [loadingSettings, setLoadingSettings] = useState(true)
@@ -50,6 +58,55 @@ export function AdminSettingsPage() {
   const [pwLoading, setPwLoading] = useState(false)
   const [showPwd, setShowPwd] = useState(false)
   const [existingId, setExistingId] = useState<string | null>(null)
+
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
+  const [profileResult, setProfileResult] = useState<{ success?: string; error?: string } | null>(null)
+  const [profileLoading, setProfileLoading] = useState(false)
+
+  const { register: profileRegister, handleSubmit: profileHandleSubmit, reset: profileReset, formState: { errors: profileErrors } } = useForm<ProfileForm>({
+    resolver: zodResolver(profileSchema),
+  })
+
+  useEffect(() => {
+    if (profile) {
+      profileReset({ full_name: profile.full_name || '', email: profile.email || '' })
+      setAvatarUrl(profile.avatar_url || null)
+    }
+  }, [profile, profileReset])
+
+  const onSaveProfile = async (data: ProfileForm) => {
+    if (!user) return
+    setProfileLoading(true)
+    setProfileResult(null)
+    try {
+      let emailPending = false
+      if (data.email !== user.email) {
+        const { data: updated, error } = await supabase.auth.updateUser({ email: data.email })
+        if (error) throw error
+        emailPending = updated.user?.email !== data.email
+      }
+
+      await supabase
+        .from('profiles')
+        .update({
+          full_name: data.full_name,
+          avatar_url: avatarUrl,
+          ...(emailPending ? {} : { email: data.email }),
+        })
+        .eq('id', user.id)
+
+      await refreshProfile()
+      setProfileResult({
+        success: emailPending
+          ? 'Profile updated. Check your inbox to confirm your new email address — your login email will update once confirmed.'
+          : 'Profile updated successfully!',
+      })
+    } catch (e) {
+      setProfileResult({ error: e instanceof Error ? e.message : 'Failed to update profile' })
+    } finally {
+      setProfileLoading(false)
+    }
+  }
 
   const { register, handleSubmit, reset, setValue, watch } = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -139,6 +196,32 @@ export function AdminSettingsPage() {
         </div>
 
         <div className="space-y-6 max-w-3xl">
+          <Card>
+            <h2 className="text-lg font-semibold text-dark-navy mb-4 flex items-center gap-2"><User className="h-5 w-5 text-primary" /> My Profile</h2>
+            <form onSubmit={profileHandleSubmit(onSaveProfile)} className="space-y-4">
+              <ImageUpload
+                bucket="media"
+                path="avatars"
+                label={avatarUrl ? 'Replace Photo' : 'Upload Profile Photo (optional)'}
+                value={avatarUrl}
+                onChange={setAvatarUrl}
+              />
+              <div className="grid sm:grid-cols-2 gap-4">
+                <Input id="profile_full_name" label="Display Name" error={profileErrors.full_name?.message} {...profileRegister('full_name')} />
+                <Input id="profile_email" label="Email Address" type="email" error={profileErrors.email?.message} {...profileRegister('email')} />
+              </div>
+              {profileResult?.success && (
+                <div className="text-sm p-3 rounded-lg bg-green-50 text-green-700 flex items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4" /> {profileResult.success}
+                </div>
+              )}
+              {profileResult?.error && (
+                <div className="text-sm p-3 rounded-lg bg-red-50 text-red-600">{profileResult.error}</div>
+              )}
+              <Button type="submit" loading={profileLoading}><Save className="mr-2 h-4 w-4" /> Save Profile</Button>
+            </form>
+          </Card>
+
           <form onSubmit={handleSubmit(onSubmit)}>
             <Card className="mb-6">
               <h2 className="text-lg font-semibold text-dark-navy mb-4 flex items-center gap-2"><Globe className="h-5 w-5 text-primary" /> General</h2>

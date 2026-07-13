@@ -12,6 +12,7 @@ interface AuthContextType {
   signInWithMagicLink: (email: string) => Promise<{ error: string | null }>
   signOut: () => Promise<void>
   resetPassword: (email: string) => Promise<{ error: string | null }>
+  refreshProfile: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -83,8 +84,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { error: error?.message ?? null }
   }
 
+  async function refreshProfile() {
+    if (user) await fetchProfile(user.id)
+  }
+
   return (
-    <AuthContext.Provider value={{ user, profile, loading, signIn, signUp, signInWithMagicLink, signOut, resetPassword }}>
+    <AuthContext.Provider value={{ user, profile, loading, signIn, signUp, signInWithMagicLink, signOut, resetPassword, refreshProfile }}>
       {children}
     </AuthContext.Provider>
   )

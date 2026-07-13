@@ -5,6 +5,7 @@ export interface Profile {
   phone?: string
   avatar_url?: string
   role: 'admin' | 'employee' | 'client'
+  is_active?: boolean
   created_at: string
   updated_at: string
 }

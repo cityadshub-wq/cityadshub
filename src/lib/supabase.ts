@@ -27,3 +27,12 @@ const dynamicAuthStorage = {
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: { storage: dynamicAuthStorage },
 })
+
+// A throwaway client for creating new accounts (e.g. Add Admin) while already signed in —
+// `supabase.auth.signUp()` on the primary client above would overwrite the current admin's
+// session with the newly created user's session. This client never persists anything.
+export function createScratchAuthClient() {
+  return createClient(supabaseUrl, supabaseAnonKey, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  })
+}

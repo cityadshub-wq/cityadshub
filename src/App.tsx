@@ -36,6 +36,7 @@ import { AdminInvoicesPage } from '@/pages/admin/invoices'
 import { AdminPaymentsPage } from '@/pages/admin/payments'
 import { AdminHeroCardsPage } from '@/pages/admin/hero-cards'
 import { AdminSettingsPage } from '@/pages/admin/settings'
+import { AdminUsersPage } from '@/pages/admin/admin-users'
 import { AdminSiteContentPage } from '@/pages/admin/site-content'
 import { AdminAboutPage } from '@/pages/admin/about'
 import { AdminOurStoryPage } from '@/pages/admin/our-story'
@@ -147,6 +148,7 @@ export default function App() {
           <Route path="/admin/media" element={<AdminMediaPage />} />
           <Route path="/admin/social-links" element={<AdminSocialLinksPage />} />
           <Route path="/admin/settings" element={<AdminSettingsPage />} />
+          <Route path="/admin/admin-users" element={<AdminUsersPage />} />
         </Route>
       </Route>
     </Routes>

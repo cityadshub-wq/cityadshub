@@ -522,3 +522,8 @@ SELECT * FROM (VALUES
 WHERE NOT EXISTS (SELECT 1 FROM about_stats);
 
 DO $$ BEGIN ALTER PUBLICATION supabase_realtime ADD TABLE about_stats; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+-- 11. Admin Users management: lets an admin deactivate another admin's access without
+-- deleting their account outright. Enforced at login (admin-login.tsx) and on every
+-- protected-route check (use-protected-route.tsx), same as the existing role check.
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT true;
