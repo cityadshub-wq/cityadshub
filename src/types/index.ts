@@ -242,6 +242,9 @@ export interface AboutContent {
   image_url?: string
   images?: string[]
   icon?: string
+  image_alt?: string
+  badge_value?: string
+  badge_label?: string
   sort_order: number
   is_active: boolean
   created_at: string
@@ -255,6 +258,19 @@ export interface GrowthTimeline {
   description?: string
   icon?: string
   image_url?: string
+  button_text?: string
+  button_link?: string
+  sort_order: number
+  is_active: boolean
+  created_at: string
+}
+
+export interface AboutStat {
+  id: string
+  icon: string
+  title: string
+  value: string
+  subtitle?: string
   sort_order: number
   is_active: boolean
   created_at: string

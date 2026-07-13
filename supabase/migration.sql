@@ -474,3 +474,51 @@ DO $$ BEGIN ALTER PUBLICATION supabase_realtime ADD TABLE portfolio_items; EXCEP
 DO $$ BEGIN ALTER PUBLICATION supabase_realtime ADD TABLE hero_cards; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 DO $$ BEGIN ALTER PUBLICATION supabase_realtime ADD TABLE portfolio_categories; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 DO $$ BEGIN ALTER PUBLICATION supabase_realtime ADD TABLE media_items; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+-- 10. About page CMS completion: the "Our Story" left image/badge and the Statistics
+-- cards were never actually read from the database by the public About section (even
+-- though about_content.image_url already existed and was uploadable in the admin) —
+-- this adds the remaining fields needed and a dedicated table for the stat cards.
+
+ALTER TABLE about_content ADD COLUMN IF NOT EXISTS image_alt TEXT;
+ALTER TABLE about_content ADD COLUMN IF NOT EXISTS badge_value TEXT;
+ALTER TABLE about_content ADD COLUMN IF NOT EXISTS badge_label TEXT;
+
+ALTER TABLE growth_timeline ADD COLUMN IF NOT EXISTS button_text TEXT;
+ALTER TABLE growth_timeline ADD COLUMN IF NOT EXISTS button_link TEXT;
+
+-- seed the "Our Story" floating experience badge to match what was previously hardcoded
+UPDATE about_content SET badge_value = '5+', badge_label = 'Years'
+WHERE section = 'story' AND badge_value IS NULL;
+
+CREATE TABLE IF NOT EXISTS about_stats (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  icon TEXT NOT NULL DEFAULT 'Users',
+  title TEXT NOT NULL,
+  value TEXT NOT NULL,
+  subtitle TEXT,
+  sort_order INT DEFAULT 0,
+  is_active BOOLEAN DEFAULT true,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+ALTER TABLE about_stats ENABLE ROW LEVEL SECURITY;
+
+DO $$ BEGIN
+  DROP POLICY IF EXISTS "Public can read about stats" ON about_stats;
+  CREATE POLICY "Public can read about stats" ON about_stats FOR SELECT USING (is_active = true);
+  DROP POLICY IF EXISTS "Admins manage about stats" ON about_stats;
+  CREATE POLICY "Admins manage about stats" ON about_stats FOR ALL USING (is_admin());
+END $$;
+
+-- seed with the 4 stats that were previously hardcoded, only on a fresh/empty table
+INSERT INTO about_stats (icon, title, value, sort_order)
+SELECT * FROM (VALUES
+  ('Users', 'Team Members', '50+', 1),
+  ('Award', 'Projects Done', '150+', 2),
+  ('TrendingUp', 'Satisfaction', '98%', 3),
+  ('Building2', 'Clients Served', '500+', 4)
+) AS v(icon, title, value, sort_order)
+WHERE NOT EXISTS (SELECT 1 FROM about_stats);
+
+DO $$ BEGIN ALTER PUBLICATION supabase_realtime ADD TABLE about_stats; EXCEPTION WHEN duplicate_object THEN NULL; END $$;

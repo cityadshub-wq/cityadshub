@@ -38,3 +38,11 @@ export async function deleteGrowthTimeline(id: string) {
     .eq('id', id)
   if (error) throw error
 }
+
+export async function reorderGrowthTimeline(ids: string[]) {
+  const results = await Promise.all(
+    ids.map((id, index) => supabase.from('growth_timeline').update({ sort_order: index }).eq('id', id))
+  )
+  const failed = results.find((r) => r.error)
+  if (failed?.error) throw failed.error
+}

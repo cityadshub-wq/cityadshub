@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useLocation, Outlet } from 'react-router-dom'
-import { LayoutDashboard, Users, Briefcase, FileText, Star, MessageSquare, Gift, BarChart3, LogOut, Menu, X, Settings, UserCog, FolderOpen, DollarSign, CreditCard, Globe, ChevronRight, Home, Layout, Image, HelpCircle, Tags, Target, ShoppingBag, Palette, Share2 } from 'lucide-react'
+import { LayoutDashboard, Users, Briefcase, FileText, Star, MessageSquare, Gift, BarChart3, LogOut, Menu, X, Settings, UserCog, FolderOpen, DollarSign, CreditCard, Globe, ChevronRight, Home, Layout, Image, HelpCircle, Tags, Target, ShoppingBag, Palette, Share2, BookOpen, TrendingUp } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAuth } from '@/contexts/AuthContext'
 import { Button } from '@/components/ui'
@@ -9,7 +9,10 @@ const sidebarLinks = [
   { path: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { separator: 'Website' },
   { path: '/admin/site-content', label: 'Hero Content', icon: Layout },
-  { path: '/admin/about', label: 'About Sections', icon: Target },
+  { path: '/admin/about', label: 'Mission, Vision & Values', icon: Target },
+  { path: '/admin/our-story', label: 'Our Story', icon: BookOpen },
+  { path: '/admin/growth-journey', label: 'Growth Journey', icon: TrendingUp },
+  { path: '/admin/about-stats', label: 'Statistics', icon: BarChart3 },
   { path: '/admin/services', label: 'Services', icon: Briefcase },
   { path: '/admin/our-work', label: 'Our Work', icon: ShoppingBag },
   { path: '/admin/portfolio-categories', label: 'Portfolio Categories', icon: Tags },
@@ -40,7 +43,10 @@ const sidebarLinks = [
 const pageTitles: Record<string, string> = {
   '/admin/dashboard': 'Dashboard',
   '/admin/site-content': 'Hero Content',
-  '/admin/about': 'About Sections',
+  '/admin/about': 'Mission, Vision & Values',
+  '/admin/our-story': 'Our Story',
+  '/admin/growth-journey': 'Growth Journey',
+  '/admin/about-stats': 'Statistics',
   '/admin/services': 'Services',
   '/admin/our-work': 'Our Work',
   '/admin/portfolio-categories': 'Portfolio Categories',

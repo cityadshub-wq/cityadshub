@@ -38,6 +38,9 @@ import { AdminHeroCardsPage } from '@/pages/admin/hero-cards'
 import { AdminSettingsPage } from '@/pages/admin/settings'
 import { AdminSiteContentPage } from '@/pages/admin/site-content'
 import { AdminAboutPage } from '@/pages/admin/about'
+import { AdminOurStoryPage } from '@/pages/admin/our-story'
+import { AdminGrowthJourneyPage } from '@/pages/admin/growth-journey'
+import { AdminAboutStatsPage } from '@/pages/admin/about-stats'
 import { AdminOurWorkPage } from '@/pages/admin/our-work'
 import { AdminPricingPage } from '@/pages/admin/pricing'
 import { AdminPortfolioCategoriesPage } from '@/pages/admin/portfolio-categories'
@@ -134,6 +137,9 @@ export default function App() {
           <Route path="/admin/hero-cards" element={<AdminHeroCardsPage />} />
           <Route path="/admin/site-content" element={<AdminSiteContentPage />} />
           <Route path="/admin/about" element={<AdminAboutPage />} />
+          <Route path="/admin/our-story" element={<AdminOurStoryPage />} />
+          <Route path="/admin/growth-journey" element={<AdminGrowthJourneyPage />} />
+          <Route path="/admin/about-stats" element={<AdminAboutStatsPage />} />
           <Route path="/admin/our-work" element={<AdminOurWorkPage />} />
           <Route path="/admin/pricing" element={<AdminPricingPage />} />
           <Route path="/admin/portfolio-categories" element={<AdminPortfolioCategoriesPage />} />
