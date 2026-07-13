@@ -1,7 +1,6 @@
 import { motion } from 'framer-motion'
 import { Target, Eye, Heart, Building2, CheckCircle2, Calendar, ArrowRight } from 'lucide-react'
 import { Card } from '@/components/ui'
-import { cn } from '@/lib/utils'
 import { useRealtimeQuery } from '@/hooks/use-realtime-query'
 import { getAboutContent } from '@/services/about'
 import { getGrowthTimeline } from '@/services/growth-timeline'
@@ -153,10 +152,10 @@ export function AboutSection() {
                   </div>
                 )}
               </div>
-              <div className="absolute -bottom-6 -right-6 h-32 w-32 rounded-2xl bg-primary flex items-center justify-center text-white shadow-xl hidden lg:flex">
+              <div className="absolute -bottom-5 -right-5 h-24 w-24 rounded-full bg-primary flex items-center justify-center text-white shadow-xl ring-4 ring-white hidden lg:flex">
                 <div className="text-center">
-                  <div className="text-3xl font-bold">{experienceValue}</div>
-                  <div className="text-xs font-medium opacity-80">{experienceLabel}</div>
+                  <div className="text-2xl font-bold leading-none">{experienceValue}</div>
+                  <div className="text-[10px] font-medium opacity-80 mt-1">{experienceLabel}</div>
                 </div>
               </div>
             </div>
@@ -203,93 +202,40 @@ export function AboutSection() {
           transition={{ duration: 0.6 }}
         >
           <h3 className="text-2xl font-bold text-dark-navy text-center mb-12">Our Growth Journey</h3>
-          <div className="relative">
-            <div className="absolute left-4 md:left-1/2 top-0 bottom-0 w-0.5 bg-primary/20 -translate-x-1/2 hidden md:block" />
+          <div className="relative max-w-3xl mx-auto">
+            <div className="absolute left-5 top-0 bottom-0 w-0.5 bg-primary/20" />
             <div className="space-y-8">
               {achievements.map((item, index) => {
                 const DotIcon = getLucideIcon(item.icon, CheckCircle2)
                 return (
-                <motion.div
-                  key={item.year}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, amount: 0.1 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className={cn(
-                    'flex flex-col md:flex-row gap-4 md:gap-8',
-                    index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'
-                  )}
-                >
-                  <div className="hidden md:flex md:w-1/2 justify-end items-center">
-                    {index % 2 === 0 ? (
-                      <div className="bg-white rounded-xl p-6 border border-gray-100 shadow-sm">
-                        {item.image_url && (
-                          <img src={item.image_url} alt={item.title} className="w-full h-32 object-cover rounded-lg mb-3" />
-                        )}
-                        <div className="flex items-center gap-3 mb-2">
-                          <Calendar className="h-5 w-5 text-primary" />
-                          <span className="text-sm font-semibold text-primary">{item.year}</span>
-                        </div>
-                        <h4 className="font-semibold text-dark-navy mb-1">{item.title}</h4>
-                        <p className="text-sm text-gray-500">{item.description}</p>
-                        {item.button_text && item.button_link && (
-                          <a href={item.button_link} className="inline-flex items-center gap-1 text-xs font-medium text-primary mt-2 hover:underline">
-                            {item.button_text} <ArrowRight className="h-3 w-3" />
-                          </a>
-                        )}
-                      </div>
-                    ) : (
-                      <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center shadow-md">
-                        <DotIcon className="h-5 w-5 text-white" />
-                      </div>
-                    )}
-                  </div>
-                  <div className="hidden md:flex md:w-1/2 items-center">
-                    {index % 2 !== 0 ? (
-                      <div className="bg-white rounded-xl p-6 border border-gray-100 shadow-sm">
-                        {item.image_url && (
-                          <img src={item.image_url} alt={item.title} className="w-full h-32 object-cover rounded-lg mb-3" />
-                        )}
-                        <div className="flex items-center gap-3 mb-2">
-                          <Calendar className="h-5 w-5 text-primary" />
-                          <span className="text-sm font-semibold text-primary">{item.year}</span>
-                        </div>
-                        <h4 className="font-semibold text-dark-navy mb-1">{item.title}</h4>
-                        <p className="text-sm text-gray-500">{item.description}</p>
-                        {item.button_text && item.button_link && (
-                          <a href={item.button_link} className="inline-flex items-center gap-1 text-xs font-medium text-primary mt-2 hover:underline">
-                            {item.button_text} <ArrowRight className="h-3 w-3" />
-                          </a>
-                        )}
-                      </div>
-                    ) : (
-                      <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center shadow-md">
-                        <DotIcon className="h-5 w-5 text-white" />
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex md:hidden items-start gap-4">
-                    <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center shadow-md shrink-0">
+                  <motion.div
+                    key={item.year}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, amount: 0.1 }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    className="relative flex items-start gap-4 sm:gap-6"
+                  >
+                    <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center shadow-md shrink-0 relative z-10">
                       <DotIcon className="h-5 w-5 text-white" />
                     </div>
-                    <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm flex-1">
+                    <div className="bg-white rounded-xl p-4 sm:p-6 border border-gray-100 shadow-sm flex-1">
                       {item.image_url && (
-                        <img src={item.image_url} alt={item.title} className="w-full h-24 object-cover rounded-lg mb-2" />
+                        <img src={item.image_url} alt={item.title} className="w-full h-32 object-cover rounded-lg mb-3" />
                       )}
-                      <div className="flex items-center gap-2 mb-1">
-                        <Calendar className="h-4 w-4 text-primary" />
-                        <span className="text-xs font-semibold text-primary">{item.year}</span>
+                      <div className="flex items-center gap-3 mb-2">
+                        <Calendar className="h-5 w-5 text-primary" />
+                        <span className="text-sm font-semibold text-primary">{item.year}</span>
                       </div>
-                      <h4 className="font-semibold text-dark-navy text-sm mb-0.5">{item.title}</h4>
-                      <p className="text-xs text-gray-500">{item.description}</p>
+                      <h4 className="font-semibold text-dark-navy mb-1">{item.title}</h4>
+                      <p className="text-sm text-gray-500">{item.description}</p>
                       {item.button_text && item.button_link && (
                         <a href={item.button_link} className="inline-flex items-center gap-1 text-xs font-medium text-primary mt-2 hover:underline">
                           {item.button_text} <ArrowRight className="h-3 w-3" />
                         </a>
                       )}
                     </div>
-                  </div>
-                </motion.div>
+                  </motion.div>
                 )
               })}
             </div>
