@@ -32,6 +32,7 @@ export function HomePage() {
   const btn1Link = getContent(content, 'button_1_link', '/#services')
   const btn2Text = getContent(content, 'button_2_text', 'Get a Free Quote')
   const btn2Link = getContent(content, 'button_2_link', '/#contact')
+  const heroCardsBackground = getContent(content, 'hero_cards_background_url', '')
 
   const stats = [
     { value: getContent(content, 'stat_1_value', '150+'), label: getContent(content, 'stat_1_label', 'Projects Completed') },
@@ -95,7 +96,16 @@ export function HomePage() {
               className="hidden lg:block"
             >
               <div className="relative">
-                <div className="w-full aspect-square rounded-2xl bg-gradient-to-br from-primary/20 to-orange/20 p-8">
+                <div className="relative w-full aspect-square rounded-2xl overflow-hidden">
+                  {heroCardsBackground && (
+                    <img
+                      src={heroCardsBackground}
+                      alt=""
+                      className="absolute inset-0 h-full w-full object-cover"
+                    />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-orange/20" />
+                  <div className="relative h-full p-8">
                   {cardsLoading ? (
                     <div className="flex items-center justify-center h-full">
                       <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
@@ -151,6 +161,7 @@ export function HomePage() {
                       })}
                     </div>
                   )}
+                  </div>
                 </div>
               </div>
             </motion.div>

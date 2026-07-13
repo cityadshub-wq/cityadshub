@@ -4,6 +4,7 @@ import { Plus, Trash2, ArrowUp, ArrowDown, Eye, EyeOff, GripVertical, X, CheckCi
 import { Button, Card, Badge, Input, ImageUpload } from '@/components/ui'
 import { SEO } from '@/components/shared/seo'
 import { getHeroCards, createHeroCard, updateHeroCard, deleteHeroCard, reorderHeroCards } from '@/services/hero-cards'
+import { getSiteContentByKey, upsertSiteContent } from '@/services/site-content'
 import type { HeroCard } from '@/types'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -41,8 +42,6 @@ const schema = z.object({
   subtitle: z.string().optional(),
   icon_name: z.string().min(1, 'Icon is required'),
   color: z.string().min(1, 'Color is required'),
-  image_url: z.string().optional(),
-  link: z.string().optional(),
 })
 type FormData = z.infer<typeof schema>
 
@@ -77,21 +76,17 @@ function HeroCardPreview({ cards, loading }: { cards: HeroCard[]; loading: boole
           transition={{ delay: i * 0.05 }}
         >
           <div className="bg-white/80 rounded-xl h-24 flex items-center border border-gray-100 shadow-sm overflow-hidden">
-            {card.image_url ? (
-              <img src={card.image_url} alt={card.title} className="h-full w-full object-cover" />
-            ) : (
-              <div className="text-center w-full p-4">
-                {(() => {
-                  const found = iconOptions.find(o => o.name === card.icon_name)
-                  const Icon = found?.icon || Megaphone
-                  return <Icon className="h-6 w-6 mx-auto mb-1" style={{ color: card.color }} />
-                })()}
-                <span className="text-xs font-medium block text-dark-navy">{card.title}</span>
-                {card.subtitle && (
-                  <span className="text-[10px] text-gray-400 block mt-0.5">{card.subtitle}</span>
-                )}
-              </div>
-            )}
+            <div className="text-center w-full p-4">
+              {(() => {
+                const found = iconOptions.find(o => o.name === card.icon_name)
+                const Icon = found?.icon || Megaphone
+                return <Icon className="h-6 w-6 mx-auto mb-1" style={{ color: card.color }} />
+              })()}
+              <span className="text-xs font-medium block text-dark-navy">{card.title}</span>
+              {card.subtitle && (
+                <span className="text-[10px] text-gray-400 block mt-0.5">{card.subtitle}</span>
+              )}
+            </div>
           </div>
         </motion.div>
       ))}
@@ -108,14 +103,15 @@ export function AdminHeroCardsPage() {
   const [saveError, setSaveError] = useState('')
   const [selectedIcon, setSelectedIcon] = useState('Megaphone')
   const [selectedColor, setSelectedColor] = useState('#FF6B00')
-  const [imageUrl, setImageUrl] = useState<string | null>(null)
   const [undoCard, setUndoCard] = useState<{ id: string; data: HeroCard } | null>(null)
+  const [backgroundUrl, setBackgroundUrl] = useState<string | null>(null)
+  const [backgroundLoading, setBackgroundLoading] = useState(true)
 
   const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
   })
 
-  useEffect(() => { load() }, [])
+  useEffect(() => { load(); loadBackground() }, [])
 
   async function load() {
     try { setCards(await getHeroCards()) }
@@ -123,12 +119,24 @@ export function AdminHeroCardsPage() {
     finally { setLoading(false) }
   }
 
+  async function loadBackground() {
+    try {
+      const item = await getSiteContentByKey('home', 'hero', 'hero_cards_background_url')
+      setBackgroundUrl(item?.value || null)
+    } catch (e) { console.error(e) }
+    finally { setBackgroundLoading(false) }
+  }
+
+  async function handleBackgroundChange(url: string | null) {
+    setBackgroundUrl(url)
+    await upsertSiteContent({ page: 'home', section: 'hero', key: 'hero_cards_background_url', value: url || '', type: 'image' })
+  }
+
   const openNewForm = () => {
     setEditingCard(null)
     setSelectedIcon('Megaphone')
     setSelectedColor('#FF6B00')
-    setImageUrl(null)
-    reset({ title: '', subtitle: '', icon_name: 'Megaphone', color: '#FF6B00', image_url: '', link: '' })
+    reset({ title: '', subtitle: '', icon_name: 'Megaphone', color: '#FF6B00' })
     setShowForm(true)
   }
 
@@ -136,14 +144,11 @@ export function AdminHeroCardsPage() {
     setEditingCard(card)
     setSelectedIcon(card.icon_name)
     setSelectedColor(card.color)
-    setImageUrl(card.image_url || null)
     reset({
       title: card.title,
       subtitle: card.subtitle || '',
       icon_name: card.icon_name,
       color: card.color,
-      image_url: card.image_url || '',
-      link: card.link || '',
     })
     setShowForm(true)
   }
@@ -157,8 +162,6 @@ export function AdminHeroCardsPage() {
           subtitle: data.subtitle || undefined,
           icon_name: data.icon_name,
           color: data.color,
-          image_url: imageUrl || undefined,
-          link: data.link || undefined,
         })
       } else {
         await createHeroCard({
@@ -166,15 +169,13 @@ export function AdminHeroCardsPage() {
           subtitle: data.subtitle || undefined,
           icon_name: data.icon_name,
           color: data.color,
-          image_url: imageUrl || undefined,
-          link: data.link || undefined,
           sort_order: cards.length,
           is_active: true,
         })
       }
       setSaved(true)
       setTimeout(() => setSaved(false), 2000)
-      reset(); setShowForm(false); setEditingCard(null); setImageUrl(null); load()
+      reset(); setShowForm(false); setEditingCard(null); load()
     } catch (e) {
       setSaveError(e instanceof Error ? e.message : 'Failed to save')
     }
@@ -229,11 +230,27 @@ export function AdminHeroCardsPage() {
           <Button onClick={openNewForm} disabled={cards.length >= 6}><Plus className="mr-2 h-4 w-4" /> Add Card</Button>
         </div>
 
+        <Card className="mb-6">
+          <h2 className="text-lg font-semibold text-dark-navy mb-1">Hero Cards Background</h2>
+          <p className="text-gray-500 text-sm mb-4">One shared background image behind all hero cards. Leave empty to keep the default gradient.</p>
+          {backgroundLoading ? (
+            <div className="h-40 bg-gray-100 rounded-2xl animate-pulse" />
+          ) : (
+            <ImageUpload
+              bucket="media"
+              path="hero-cards-background"
+              label={backgroundUrl ? 'Replace Image (remove, then upload a new one)' : 'Upload Image'}
+              value={backgroundUrl}
+              onChange={handleBackgroundChange}
+            />
+          )}
+        </Card>
+
         {showForm && (
           <Card className="mb-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-dark-navy">{editingCard ? 'Edit Card' : 'New Hero Card'}</h2>
-              <button onClick={() => { setShowForm(false); setEditingCard(null); setImageUrl(null) }} className="p-1 text-gray-400 hover:text-dark-navy"><X className="h-4 w-4" /></button>
+              <button onClick={() => { setShowForm(false); setEditingCard(null) }} className="p-1 text-gray-400 hover:text-dark-navy"><X className="h-4 w-4" /></button>
             </div>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div className="grid sm:grid-cols-2 gap-4">
@@ -294,16 +311,6 @@ export function AdminHeroCardsPage() {
                 <input type="hidden" {...register('color')} value={selectedColor} />
               </div>
 
-              <ImageUpload
-                bucket="gallery"
-                path="hero-cards"
-                label="Card Image (optional)"
-                value={imageUrl}
-                onChange={(url) => setImageUrl(url)}
-              />
-
-              <Input id="link" label="Link (optional)" placeholder="/services" {...register('link')} />
-
               {saveError && (
                 <div className="text-sm p-3 rounded-lg bg-red-50 text-red-600 flex items-center gap-2">
                   <AlertCircle className="h-4 w-4" /> {saveError}
@@ -336,10 +343,8 @@ export function AdminHeroCardsPage() {
                     <div className="text-gray-300 cursor-grab">
                       <GripVertical className="h-4 w-4" />
                     </div>
-                    <div className="h-10 w-10 rounded-xl flex items-center justify-center overflow-hidden bg-gray-50" style={card.image_url ? {} : { backgroundColor: `${card.color}15` }}>
-                      {card.image_url ? (
-                        <img src={card.image_url} alt="" className="h-full w-full object-cover" />
-                      ) : (() => {
+                    <div className="h-10 w-10 rounded-xl flex items-center justify-center overflow-hidden bg-gray-50" style={{ backgroundColor: `${card.color}15` }}>
+                      {(() => {
                         const found = iconOptions.find(o => o.name === card.icon_name)
                         const Icon = found?.icon || Megaphone
                         return <Icon className="h-5 w-5" style={{ color: card.color }} />
