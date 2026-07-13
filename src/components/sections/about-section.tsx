@@ -152,10 +152,10 @@ export function AboutSection() {
                   </div>
                 )}
               </div>
-              <div className="absolute -bottom-5 -right-5 h-24 w-24 rounded-full bg-primary flex items-center justify-center text-white shadow-xl ring-4 ring-white hidden lg:flex">
+              <div className="absolute -bottom-8 -right-8 h-20 w-20 rounded-full bg-primary flex items-center justify-center text-white shadow-xl ring-4 ring-white hidden lg:flex">
                 <div className="text-center">
-                  <div className="text-2xl font-bold leading-none">{experienceValue}</div>
-                  <div className="text-[10px] font-medium opacity-80 mt-1">{experienceLabel}</div>
+                  <div className="text-xl font-bold leading-none">{experienceValue}</div>
+                  <div className="text-[9px] font-medium opacity-80 mt-1">{experienceLabel}</div>
                 </div>
               </div>
             </div>
