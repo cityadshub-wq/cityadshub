@@ -112,8 +112,14 @@ export function PortfolioSection() {
               >
                 <Card className="group h-full overflow-hidden hover:-translate-y-1 transition-all duration-300">
                   <div className="h-48 rounded-xl bg-gradient-to-br from-primary/10 to-orange/10 mb-4 flex items-center justify-center relative overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-orange/5 group-hover:scale-110 transition-transform duration-500" />
-                    <ExternalLink className="h-10 w-10 text-primary/30 group-hover:text-primary group-hover:scale-110 transition-all duration-300" />
+                    {item.images?.[0] ? (
+                      <img src={item.images[0]} alt={item.title} className="absolute inset-0 h-full w-full object-cover group-hover:scale-110 transition-transform duration-500" loading="lazy" />
+                    ) : (
+                      <>
+                        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-orange/5 group-hover:scale-110 transition-transform duration-500" />
+                        <ExternalLink className="h-10 w-10 text-primary/30 group-hover:text-primary group-hover:scale-110 transition-all duration-300" />
+                      </>
+                    )}
                   </div>
                   <Badge variant="primary" className="mb-3">{item.category}</Badge>
                   <h3 className="text-lg font-semibold text-dark-navy mb-2 group-hover:text-primary transition-colors">{item.title}</h3>
