@@ -15,7 +15,7 @@ function HeroIcon({ name, className, style }: { name: string; className?: string
 
 function getContent(items: SiteContent[], key: string, fallback: string) {
   const item = items.find((i) => i.key === key)
-  return item?.value || fallback
+  return item?.value ?? fallback
 }
 
 export function HomePage() {
@@ -66,17 +66,21 @@ export function HomePage() {
                 {heroSubtitle}
               </p>
               <div className="flex flex-wrap gap-4">
-                <a href={btn1Link}>
-                  <Button size="xl">
-                    {btn1Text}
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </Button>
-                </a>
-                <a href={btn2Link}>
-                  <Button variant="outline" size="xl">
-                    {btn2Text}
-                  </Button>
-                </a>
+                {btn1Text && (
+                  <a href={btn1Link}>
+                    <Button size="xl">
+                      {btn1Text}
+                      <ArrowRight className="ml-2 h-5 w-5" />
+                    </Button>
+                  </a>
+                )}
+                {btn2Text && (
+                  <a href={btn2Link}>
+                    <Button variant="outline" size="xl">
+                      {btn2Text}
+                    </Button>
+                  </a>
+                )}
               </div>
 
               <div className="grid grid-cols-4 gap-8 mt-12 pt-8 border-t border-gray-200">
