@@ -61,7 +61,6 @@ export interface BlogPost {
   slug: string
   content: string
   excerpt: string
-  featured_image?: string
   category_id?: string
   tags?: string[]
   author_id: string
@@ -72,6 +71,7 @@ export interface BlogPost {
   seo_title?: string
   seo_description?: string
   author?: string
+  featured_image?: string | null
   sort_order?: number
   is_featured?: boolean
   category?: string

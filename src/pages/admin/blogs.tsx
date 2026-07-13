@@ -26,7 +26,7 @@ const schema = z.object({
   status: z.enum(['draft', 'published', 'scheduled']),
   scheduled_at: z.string().optional(),
 })
-type FormData = z.infer<typeof schema> & { featured_image?: string }
+type FormData = z.infer<typeof schema> & { featured_image?: string | null }
 
 export function AdminBlogsPage() {
   const [posts, setPosts] = useState<BlogPost[]>([])
@@ -52,7 +52,7 @@ export function AdminBlogsPage() {
 
   const openNewForm = () => {
     setEditingPost(null)
-    reset({ title: '', content: '', excerpt: '', category: '', tags: '', author: '', read_time: '', seo_title: '', seo_description: '', sort_order: '0', is_featured: false, status: 'draft', scheduled_at: '' })
+    reset({ title: '', content: '', excerpt: '', category: '', tags: '', author: '', read_time: '', seo_title: '', seo_description: '', sort_order: '0', is_featured: false, status: 'draft', scheduled_at: '', featured_image: null })
     setShowForm(true)
   }
 
@@ -72,6 +72,7 @@ export function AdminBlogsPage() {
       is_featured: post.is_featured || false,
       status: post.status,
       scheduled_at: post.scheduled_at ? post.scheduled_at.slice(0, 16) : '',
+      featured_image: post.featured_image ?? null,
     })
     setShowForm(true)
   }
@@ -94,6 +95,7 @@ export function AdminBlogsPage() {
       status: data.status,
       scheduled_at: data.status === 'scheduled' && data.scheduled_at ? new Date(data.scheduled_at).toISOString() : undefined,
       published_at: data.status === 'published' ? new Date().toISOString() : undefined,
+      featured_image: data.featured_image ?? null,
     }
 
     if (editingPost) {
@@ -169,7 +171,7 @@ export function AdminBlogsPage() {
                 path="featured"
                 label="Featured Image"
                 value={editingPost?.featured_image || null}
-                onChange={(url) => setValue('featured_image', url || undefined)}
+                onChange={(url) => setValue('featured_image', url)}
               />
               <Textarea id="excerpt" label="Excerpt" error={errors.excerpt?.message} {...register('excerpt')} />
               <div>
