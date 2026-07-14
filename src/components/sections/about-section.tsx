@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
 import { Target, Eye, Heart, Building2, CheckCircle2, Calendar, ArrowRight } from 'lucide-react'
-import { Card } from '@/components/ui'
+import { Card, ExpandableText } from '@/components/ui'
 import { useRealtimeQuery } from '@/hooks/use-realtime-query'
 import { getAboutContent } from '@/services/about'
 import { getGrowthTimeline } from '@/services/growth-timeline'
@@ -133,7 +133,7 @@ export function AboutSection() {
                   <item.icon className="h-7 w-7 text-primary group-hover:text-white transition-colors" />
                 </div>
                 <h3 className="text-xl font-semibold text-dark-navy mb-3">{item.title}</h3>
-                <p className="text-gray-600 leading-relaxed">{item.description}</p>
+                <ExpandableText text={item.description} className="text-gray-600 leading-relaxed" />
               </Card>
             </motion.div>
           ))}
@@ -177,11 +177,7 @@ export function AboutSection() {
               <span className="inline-block rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary mb-3">{storyBadge}</span>
             )}
             <h3 className="text-2xl font-bold text-dark-navy mb-6">{storyHeading}</h3>
-            <div className="space-y-4 text-gray-600 leading-relaxed">
-              {storyParagraphs.map((paragraph, i) => (
-                <p key={i}>{paragraph}</p>
-              ))}
-            </div>
+            <ExpandableText text={storyParagraphs.join(' ')} className="text-gray-600 leading-relaxed" />
             <div className="grid grid-cols-2 gap-4 mt-8">
               {statsData.slice(0, 4).map((stat) => {
                 const Icon = getLucideIcon(stat.icon)

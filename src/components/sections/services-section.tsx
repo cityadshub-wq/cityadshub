@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
 import { ArrowRight } from 'lucide-react'
-import { Card } from '@/components/ui'
+import { Card, ExpandableText } from '@/components/ui'
 import { cn } from '@/lib/utils'
 import { useRealtimeQuery } from '@/hooks/use-realtime-query'
 import { getServices } from '@/services/services'
@@ -72,7 +72,7 @@ export function ServicesSection() {
                     </div>
                   )}
                   <h3 className="text-lg font-semibold text-dark-navy mb-2">{service.name}</h3>
-                  <p className="text-sm text-gray-500 leading-relaxed">{service.description}</p>
+                  <ExpandableText text={service.description} className="text-sm text-gray-500 leading-relaxed" />
                   <div className="mt-4 flex items-center gap-1 text-sm font-medium text-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     Learn More <ArrowRight className="h-3.5 w-3.5" />
                   </div>
