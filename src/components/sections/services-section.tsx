@@ -55,17 +55,26 @@ export function ServicesSection() {
                 viewport={{ once: true, amount: 0.1 }}
                 transition={{ duration: 0.5, delay: index * 0.05 }}
               >
-                <Card className="group cursor-pointer h-full hover:-translate-y-1 transition-all duration-300">
-                  <div className={cn(
-                    'h-14 w-14 rounded-2xl flex items-center justify-center mb-4 transition-all duration-300',
-                    'bg-primary/10 group-hover:bg-primary group-hover:scale-110 group-hover:shadow-lg'
-                  )}>
-                    <Icon className="h-7 w-7 text-primary group-hover:text-white transition-colors duration-300" />
-                  </div>
+                <Card className="group cursor-pointer h-full hover:-translate-y-1 transition-all duration-300 overflow-hidden">
+                  {service.image_url ? (
+                    <div className="relative -mx-6 -mt-6 mb-4 h-36 overflow-hidden">
+                      <img src={service.image_url} alt={service.name} className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-500" loading="lazy" />
+                      <div className="absolute bottom-3 left-3 h-11 w-11 rounded-xl bg-white shadow-md flex items-center justify-center">
+                        <Icon className="h-5 w-5 text-primary" />
+                      </div>
+                    </div>
+                  ) : (
+                    <div className={cn(
+                      'h-14 w-14 rounded-2xl flex items-center justify-center mb-4 transition-all duration-300',
+                      'bg-primary/10 group-hover:bg-primary group-hover:scale-110 group-hover:shadow-lg'
+                    )}>
+                      <Icon className="h-7 w-7 text-primary group-hover:text-white transition-colors duration-300" />
+                    </div>
+                  )}
                   <h3 className="text-lg font-semibold text-dark-navy mb-2">{service.name}</h3>
                   <p className="text-sm text-gray-500 leading-relaxed">{service.description}</p>
                   <div className="mt-4 flex items-center gap-1 text-sm font-medium text-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    {service.button_text || 'Learn More'} <ArrowRight className="h-3.5 w-3.5" />
+                    Learn More <ArrowRight className="h-3.5 w-3.5" />
                   </div>
                 </Card>
               </motion.div>

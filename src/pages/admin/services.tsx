@@ -16,8 +16,6 @@ const schema = z.object({
   category: z.string().min(1),
   icon: z.string().optional(),
   slug: z.string().optional(),
-  button_text: z.string().optional(),
-  button_link: z.string().optional(),
   sort_order: z.string().optional(),
   is_featured: z.boolean().optional(),
   is_active: z.boolean().optional(),
@@ -46,7 +44,7 @@ export function AdminServicesPage() {
   const openNewForm = () => {
     setEditingService(null)
     setImageUrl(null)
-    reset({ name: '', description: '', category: '', icon: 'Megaphone', slug: '', button_text: 'Learn More', button_link: '', sort_order: '0', is_featured: false, is_active: true })
+    reset({ name: '', description: '', category: '', icon: 'Megaphone', slug: '', sort_order: '0', is_featured: false, is_active: true })
     setShowForm(true)
   }
 
@@ -59,8 +57,6 @@ export function AdminServicesPage() {
       category: svc.category,
       icon: svc.icon || 'Megaphone',
       slug: svc.slug,
-      button_text: svc.button_text || 'Learn More',
-      button_link: svc.button_link || '',
       sort_order: String(svc.sort_order || 0),
       is_featured: svc.is_featured || false,
       is_active: svc.is_active,
@@ -76,8 +72,6 @@ export function AdminServicesPage() {
       category: data.category,
       icon: data.icon || 'Megaphone',
       image_url: imageUrl || undefined,
-      button_text: data.button_text || undefined,
-      button_link: data.button_link || undefined,
       sort_order: data.sort_order ? parseInt(data.sort_order) : 0,
       is_featured: data.is_featured || false,
     }
@@ -125,10 +119,6 @@ export function AdminServicesPage() {
               </div>
               <Textarea id="description" label="Description" error={errors.description?.message} {...register('description')} />
               <ImageUpload bucket="portfolio" path="services" label="Image" value={imageUrl} onChange={(url) => setImageUrl(url)} />
-              <div className="grid sm:grid-cols-2 gap-4">
-                <Input id="button_text" label="Button Text" placeholder="Learn More" {...register('button_text')} />
-                <Input id="button_link" label="Button Link" placeholder="/#contact" {...register('button_link')} />
-              </div>
               <div className="grid sm:grid-cols-3 gap-4">
                 <Input id="sort_order" label="Display Order" type="number" {...register('sort_order')} />
                 <label className="flex items-center gap-2 cursor-pointer pt-6">
