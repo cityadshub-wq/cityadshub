@@ -64,6 +64,7 @@ export function AboutSection() {
   const intro = bySection('intro')
   const introTitle = intro?.title || fallbackIntro.title
   const introDescription = intro?.description || fallbackIntro.description
+  const introImage = intro?.image_url
 
   const values = (['mission', 'vision', 'values'] as const)
     .map((section) => {
@@ -113,6 +114,11 @@ export function AboutSection() {
           <p className="text-lg text-gray-600">
             {introDescription}
           </p>
+          {introImage && (
+            <div className="mt-8 rounded-2xl overflow-hidden max-w-2xl mx-auto">
+              <img src={introImage} alt={introTitle} className="w-full h-64 sm:h-80 object-cover" />
+            </div>
+          )}
         </motion.div>
 
         <div className="grid md:grid-cols-3 gap-8 mb-20">
