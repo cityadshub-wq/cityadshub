@@ -15,14 +15,11 @@ const schema = z.object({
   title: z.string().min(2),
   content: z.string().min(50),
   excerpt: z.string().min(10),
-  category: z.string().optional(),
   tags: z.string().optional(),
   author: z.string().optional(),
   read_time: z.string().optional(),
   seo_title: z.string().optional(),
   seo_description: z.string().optional(),
-  sort_order: z.string().optional(),
-  is_featured: z.boolean().optional(),
   status: z.enum(['draft', 'published', 'scheduled']),
   scheduled_at: z.string().optional(),
   featured_image: z.string().nullable().optional(),
@@ -53,7 +50,7 @@ export function AdminBlogsPage() {
 
   const openNewForm = () => {
     setEditingPost(null)
-    reset({ title: '', content: '', excerpt: '', category: '', tags: '', author: '', read_time: '', seo_title: '', seo_description: '', sort_order: '0', is_featured: false, status: 'draft', scheduled_at: '', featured_image: null })
+    reset({ title: '', content: '', excerpt: '', tags: '', author: '', read_time: '', seo_title: '', seo_description: '', status: 'draft', scheduled_at: '', featured_image: null })
     setShowForm(true)
   }
 
@@ -63,14 +60,11 @@ export function AdminBlogsPage() {
       title: post.title,
       content: post.content,
       excerpt: post.excerpt,
-      category: post.category || '',
       tags: post.tags?.join(', ') || '',
       author: post.author || '',
       read_time: post.read_time ? String(post.read_time) : '',
       seo_title: post.seo_title || '',
       seo_description: post.seo_description || '',
-      sort_order: String(post.sort_order || 0),
-      is_featured: post.is_featured || false,
       status: post.status,
       scheduled_at: post.scheduled_at ? post.scheduled_at.slice(0, 16) : '',
       featured_image: post.featured_image ?? null,
@@ -86,13 +80,10 @@ export function AdminBlogsPage() {
       content: data.content,
       excerpt: data.excerpt,
       tags: data.tags ? data.tags.split(',').map(t => t.trim()) : [],
-      category: data.category || undefined,
       author: data.author || undefined,
       read_time: data.read_time ? parseInt(data.read_time) : undefined,
       seo_title: data.seo_title || undefined,
       seo_description: data.seo_description || undefined,
-      sort_order: data.sort_order ? parseInt(data.sort_order) : 0,
-      is_featured: data.is_featured || false,
       status: data.status,
       scheduled_at: data.status === 'scheduled' && data.scheduled_at ? new Date(data.scheduled_at).toISOString() : undefined,
       published_at: data.status === 'published' ? new Date().toISOString() : undefined,
@@ -138,16 +129,12 @@ export function AdminBlogsPage() {
             </div>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <Input id="title" label="Post Title" error={errors.title?.message} {...register('title')} />
-              <div className="grid sm:grid-cols-2 gap-4">
-                <Input id="category" label="Category" placeholder="e.g. SEO, Marketing" {...register('category')} />
-                <Input id="tags" label="Tags (comma separated)" placeholder="seo, marketing, tips" {...register('tags')} />
-              </div>
               <div className="grid sm:grid-cols-3 gap-4">
+                <Input id="tags" label="Tags (comma separated)" placeholder="seo, marketing, tips" {...register('tags')} />
                 <Input id="author" label="Author" placeholder="e.g. Priya Patel" {...register('author')} />
                 <Input id="read_time" label="Read Time (minutes)" type="number" {...register('read_time')} />
-                <Input id="sort_order" label="Display Order" type="number" {...register('sort_order')} />
               </div>
-              <div className="grid sm:grid-cols-3 gap-4">
+              <div className="grid sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-dark-navy mb-1.5">Status</label>
                   <select {...register('status')} className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-dark-navy focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20">
@@ -162,10 +149,6 @@ export function AdminBlogsPage() {
                 {watch('status') === 'scheduled' && (
                   <Input id="scheduled_at" label="Schedule Date" type="datetime-local" {...register('scheduled_at')} />
                 )}
-                <label className="flex items-center gap-2 cursor-pointer pt-6">
-                  <input type="checkbox" {...register('is_featured')} className="rounded border-gray-300" />
-                  <span className="text-sm font-medium text-dark-navy">Featured</span>
-                </label>
               </div>
               <ImageUpload
                 bucket="blog-images"
