@@ -14,10 +14,15 @@ const fadeUp = {
 }
 
 export function BlogSection() {
-  const { data: fetchedPosts = [], isLoading: loading } = useRealtimeQuery('blog_posts', ['blog_posts'], getBlogPosts)
+  const { data: fetchedPosts = [], isLoading: loading, isError } = useRealtimeQuery('blog_posts', ['blog_posts'], getBlogPosts)
   const posts = fetchedPosts.filter((p) => p.status === 'published').slice(0, 6)
 
   type DisplayPost = BlogPost & { date?: string }
+
+  // The CMS is reachable and simply has no published posts yet — hide the section
+  // rather than show placeholder posts pretending to be real. Only fall back to
+  // sample posts if the query itself failed.
+  if (!loading && !isError && posts.length === 0) return null
 
   const fallbackPosts: DisplayPost[] = [
     { id: '1', title: '10 Proven Ways to Boost Your Local SEO in 2024', excerpt: 'Local SEO is crucial for businesses targeting customers in specific areas. Here are 10 actionable strategies to improve your local search rankings.', content: '', slug: 'boost-local-seo', status: 'published', author_id: '', created_at: '2024-03-15', updated_at: '2024-03-15', category: 'SEO', author: 'Priya Patel', date: '2024-03-15' },
@@ -27,7 +32,7 @@ export function BlogSection() {
     { id: '5', title: '5 Facebook Ad Strategies That Actually Work', excerpt: 'Stop wasting money on Facebook ads. These 5 proven strategies will help you get the best ROI from your campaigns.', content: '', slug: 'facebook-ad-strategies', status: 'published', author_id: '', created_at: '2024-02-20', updated_at: '2024-02-20', category: 'Marketing', author: 'Priya Patel', date: '2024-02-20' },
     { id: '6', title: 'How to Get FSSAI License for Your Food Business', excerpt: 'Step-by-step guide to obtaining FSSAI registration for restaurants, food manufacturers, and food delivery businesses.', content: '', slug: 'fssai-license-guide', status: 'published', author_id: '', created_at: '2024-02-15', updated_at: '2024-02-15', category: 'Business', author: 'Amit Singh', date: '2024-02-15' },
   ]
-  const displayPosts: DisplayPost[] = posts.length > 0 ? posts : fallbackPosts
+  const displayPosts: DisplayPost[] = isError ? fallbackPosts : posts
 
   return (
     <section id="blog" className="py-24 bg-gray-50">
