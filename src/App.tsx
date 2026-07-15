@@ -49,6 +49,8 @@ import { AdminFAQsPage } from '@/pages/admin/faqs'
 import { AdminMediaPage } from '@/pages/admin/media'
 import { AdminSocialLinksPage } from '@/pages/admin/social-links'
 
+import { FloatingContact } from '@/components/shared/floating-contact'
+
 import { AboutSection } from '@/components/sections/about-section'
 import { ServicesSection } from '@/components/sections/services-section'
 import { PortfolioSection } from '@/components/sections/portfolio-section'
@@ -70,6 +72,7 @@ function PublicShell() {
       <Navbar />
       <Outlet />
       <Footer />
+      <FloatingContact />
     </>
   )
 }
