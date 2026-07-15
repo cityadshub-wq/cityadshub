@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
 import { Target, Eye, Heart, Building2, CheckCircle2, Calendar, ArrowRight } from 'lucide-react'
-import { Card, ExpandableText } from '@/components/ui'
+import { Card, ExpandableText, CountUp } from '@/components/ui'
 import { useRealtimeQuery } from '@/hooks/use-realtime-query'
 import { getAboutContent } from '@/services/about'
 import { getGrowthTimeline } from '@/services/growth-timeline'
@@ -178,22 +178,6 @@ export function AboutSection() {
             )}
             <h3 className="text-2xl font-bold text-dark-navy mb-6">{storyHeading}</h3>
             <ExpandableText text={storyParagraphs.join(' ')} className="text-gray-600 leading-relaxed" />
-            <div className="grid grid-cols-2 gap-4 mt-8">
-              {statsData.slice(0, 4).map((stat) => {
-                const Icon = getLucideIcon(stat.icon)
-                return (
-                  <div key={stat.id} className="flex items-center gap-3 bg-white rounded-xl p-4 border border-gray-100">
-                    <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                      <Icon className="h-5 w-5 text-primary" />
-                    </div>
-                    <div>
-                      <div className="text-lg font-bold text-dark-navy">{stat.value}</div>
-                      <div className="text-xs text-gray-500">{stat.title}</div>
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
           </motion.div>
         </div>
 
@@ -255,7 +239,7 @@ export function AboutSection() {
             return (
               <Card key={stat.id} className="text-center py-6">
                 <Icon className="h-6 w-6 text-primary mx-auto mb-2" />
-                <div className="text-2xl sm:text-3xl font-bold text-dark-navy">{stat.value}</div>
+                <CountUp value={stat.value} className="text-2xl sm:text-3xl font-bold text-dark-navy" />
                 <div className="text-sm text-gray-500">{stat.title}</div>
               </Card>
             )
