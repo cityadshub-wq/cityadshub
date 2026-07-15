@@ -18,21 +18,32 @@ export function CountUp({ value, className }: CountUpProps) {
     const el = ref.current
     let played = false
 
+    const play = () => {
+      if (played) return
+      played = true
+      animate(0, target, {
+        duration: 1.5,
+        ease: 'easeOut',
+        onUpdate: (v) => setDisplay(Math.round(v).toString()),
+      })
+    }
+
     const observer = new IntersectionObserver(
       (entries) => {
-        if (!entries[0].isIntersecting || played) return
-        played = true
-        animate(0, target, {
-          duration: 1.5,
-          ease: 'easeOut',
-          onUpdate: (v) => setDisplay(Math.round(v).toString()),
-        })
-        observer.disconnect()
+        if (entries[0].isIntersecting) play()
       },
       { threshold: 0.1 }
     )
     observer.observe(el)
-    return () => observer.disconnect()
+
+    // Hard guarantee: the real number always ends up on screen, independent of
+    // whether the observer or the animate() call itself ever actually runs.
+    const forceCorrectValue = setTimeout(() => setDisplay(target.toString()), 4000)
+
+    return () => {
+      observer.disconnect()
+      clearTimeout(forceCorrectValue)
+    }
   }, [target])
 
   return <span ref={ref} className={className}>{target === null ? value : display}{suffix}</span>

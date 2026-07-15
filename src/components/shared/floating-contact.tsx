@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion'
 import { Phone } from 'lucide-react'
 import { useSettings } from '@/hooks/use-settings'
 
@@ -20,35 +19,25 @@ export function FloatingContact() {
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-center gap-3">
       {phone && (
-        <motion.a
+        <a
           href={`tel:${phone}`}
-          initial={{ opacity: 0, scale: 0.5, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ delay: 0.4, type: 'spring', stiffness: 260, damping: 20 }}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.95 }}
-          className="h-12 w-12 rounded-full bg-primary text-white shadow-lg flex items-center justify-center"
+          className="h-12 w-12 rounded-full bg-primary text-white shadow-lg flex items-center justify-center hover:scale-110 active:scale-95 transition-transform duration-200"
           aria-label="Call us"
         >
           <Phone className="h-5 w-5" />
-        </motion.a>
+        </a>
       )}
       {whatsapp && (
-        <motion.a
+        <a
           href={`https://wa.me/${whatsapp}`}
           target="_blank"
           rel="noopener noreferrer"
-          initial={{ opacity: 0, scale: 0.5, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ delay: 0.1, type: 'spring', stiffness: 260, damping: 20 }}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.95 }}
-          className="relative h-14 w-14 rounded-full bg-[#25D366] text-white shadow-lg flex items-center justify-center"
+          className="relative h-14 w-14 rounded-full bg-[#25D366] text-white shadow-lg flex items-center justify-center animate-bounce hover:scale-110 hover:animate-none active:scale-95 transition-transform duration-200"
           aria-label="Chat on WhatsApp"
         >
           <span className="absolute inset-0 rounded-full bg-[#25D366] animate-ping opacity-75" />
           <WhatsAppIcon className="relative h-7 w-7" />
-        </motion.a>
+        </a>
       )}
     </div>
   )
